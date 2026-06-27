@@ -3,7 +3,7 @@
 <!-- Badges -->
 [![Tests](https://github.com/pankaj357/AGVarPred/actions/workflows/tests.yml/badge.svg)](https://github.com/pankaj357/AGVarPred/actions/workflows/tests.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.TODO.svg)](https://doi.org/10.5281/zenodo.TODO)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -155,7 +155,7 @@ AGVarPred/
 
 ## Requirements
 
-- Python >= 3.10
+- Python >= 3.11
 - Either the AlphaGenome Python SDK and a valid API key, or a directory of
   precomputed AlphaGenome feature matrices.
 - A local gnomAD VCF is **recommended** but not required:

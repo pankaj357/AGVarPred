@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "Germline variant pathogenicity prediction using AlphaGenome functional genomics scores."
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [
     {name = "Pankaj Kumar", email = "ft.pank@gmail.com"},
     {name = "Kanaka K. K.", email = "kkokay07@gmail.com"},
@@ -34,7 +34,7 @@ classifiers = [
     "Intended Audience :: Science/Research",
 
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
+
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
