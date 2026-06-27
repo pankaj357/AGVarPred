@@ -27,5 +27,5 @@ keywords:
   - ClinVar
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.TODO"
+    value: "10.5281/zenodo.20955782"
     description: "Zenodo archive containing the trained models, splits, and benchmarks."

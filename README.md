@@ -4,7 +4,7 @@
 [![Tests](https://github.com/pankaj357/AGVarPred/actions/workflows/tests.yml/badge.svg)](https://github.com/pankaj357/AGVarPred/actions/workflows/tests.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.TODO.svg)](https://doi.org/10.5281/zenodo.TODO)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20955782.svg)](https://doi.org/10.5281/zenodo.20955782)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 **AGVarPred** is a command-line tool and Python library for predicting the pathogenicity of germline variants from a VCF file. It integrates:
@@ -166,13 +166,17 @@ AGVarPred/
 ## Citation
 
 If you use AGVarPred in your research, please cite the Zenodo archive and the
-GitHub repository. The exact citation will be available once the Zenodo DOI is
-finalized.
+GitHub repository.
+
+- **Concept DOI** (always resolves to the latest version):  
+  <https://doi.org/10.5281/zenodo.20955782>
+- **Version DOI for v1.0.1**:  
+  <https://doi.org/10.5281/zenodo.20955783>
 
 ```text
 Kumar, P., & Kanaka, K. K. (2026). AGVarPred: germline variant pathogenicity
 prediction using AlphaGenome functional genomics (Version 1.0.0).
-Zenodo. https://doi.org/10.5281/zenodo.TODO
+Zenodo. https://doi.org/10.5281/zenodo.20955782
 GitHub: https://github.com/pankaj357/AGVarPred
 ```
 

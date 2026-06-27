@@ -122,7 +122,7 @@ benign, DVD, and DDD clinical datasets. Full results are available in
 ## Software and reproducibility
 
 - Source code: <https://github.com/pankaj357/AGVarPred>
-- Zenodo archive: `10.5281/zenodo.TODO` (DOI to be assigned)
+- Zenodo archive: [`10.5281/zenodo.20955782`](https://doi.org/10.5281/zenodo.20955782) (concept DOI; resolves to the latest version)
 - License: Apache-2.0
 
 ## References

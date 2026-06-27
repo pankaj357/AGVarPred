@@ -36,9 +36,9 @@ action.
 
 - [x] Initialize git and tag `v1.0.0` locally.
 - [x] Create/push `v1.0.1` tag on the fixed commit.
-- [ ] Create a GitHub Release tagged `v1.0.1` on the public repository.
-- [ ] Link the GitHub repository to Zenodo and create the Zenodo record.
-- [ ] Replace `10.5281/zenodo.TODO` in all `CITATION.cff` files, `README.md`,
+- [x] Create a GitHub Release tagged `v1.0.1` on the public repository.
+- [x] Link the GitHub repository to Zenodo and create the Zenodo record.
+- [x] Replace `10.5281/zenodo.TODO` in all `CITATION.cff` files, `README.md`,
       and `MODEL_CARD.md` with the real DOI.
 - [x] Update `AGVarPred-zenodo/code_reference.txt` with the real GitHub Release URL.
 

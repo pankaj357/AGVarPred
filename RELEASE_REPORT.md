@@ -63,7 +63,7 @@ prediction logic were modified.
 
 ## Remaining placeholders requiring owner action
 
-1. **Zenodo DOI** (`10.5281/zenodo.TODO`) appears in:
+1. **Zenodo DOI** (`10.5281/zenodo.20955782`) appears in:
    - `CITATION.cff`
    - `AGVarPred-training/CITATION.cff`
    - `AGVarPred-zenodo/CITATION.cff`
@@ -115,7 +115,7 @@ scores, gnomAD allele frequency, and VEP annotations.
 - This release corrects CI compatibility (Python 3.11+) and ensures all model
   pickle files are present in the Zenodo archive.
 - The Zenodo DOI badge and `CITATION.cff` files currently contain a placeholder
-  (`10.5281/zenodo.TODO`) that will be updated after the Zenodo record is created.
+  (`10.5281/zenodo.20955782`) (concept DOI; resolves to the latest version).
 ```
 
 ### Assets to upload
@@ -135,6 +135,6 @@ python -m build
 1. On GitHub, create a Release from tag `v1.0.1`.
 2. Upload the wheel and sdist from `dist/`.
 3. Link the repository to Zenodo and publish the Zenodo record.
-4. Replace `10.5281/zenodo.TODO` with the real DOI everywhere.
+4. Replace `10.5281/zenodo.TODO` with the real DOI everywhere (completed in v1.0.2).
 5. Regenerate `AGVarPred-zenodo/checksums.sha256`.
 6. Optionally update `docs/installation.md` with official AlphaGenome SDK docs.
