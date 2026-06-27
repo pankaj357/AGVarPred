@@ -34,21 +34,25 @@ action.
 
 ## Zenodo and DOI
 
-- [ ] Create a GitHub Release tagged `v1.0.0`.
+- [x] Initialize git and tag `v1.0.0` locally.
+- [ ] Create a GitHub Release tagged `v1.0.0` on the public repository.
 - [ ] Link the GitHub repository to Zenodo and create the v1.0.0 Zenodo record.
-- [ ] Replace `10.5281/zenodo.TODO` in all `CITATION.cff` files with the real DOI.
+- [ ] Replace `10.5281/zenodo.TODO` in all `CITATION.cff` files, `README.md`,
+      and `MODEL_CARD.md` with the real DOI.
 - [x] Update `AGVarPred-zenodo/code_reference.txt` with the real GitHub Release URL.
 
 ## Code and model metadata
 
-- [ ] Make the first git commit and tag it `v1.0.0`.
-- [ ] Replace the `git_commit` placeholder in:
+- [x] Make the first git commit and tag it `v1.0.0`.
+- [x] Replace the `git_commit` placeholder in:
   - `model/model_full/manifest.yaml`
   - `model/model_no_af/manifest.yaml`
   - `AGVarPred-zenodo/model/model_full/manifest.yaml`
   - `AGVarPred-zenodo/model/model_no_af/manifest.yaml`
-  with the actual commit SHA.
-- [ ] Regenerate `AGVarPred-zenodo/checksums.sha256` after any final edits.
+  with the actual commit SHA (`52a8ede5e1c7b437d7bdf760016325a35f9848f7`).
+  Note: this SHA refers to the initial release commit that contains the model
+  artifacts. The `v1.0.0` tag points to the final metadata commit.
+- [x] Regenerate `AGVarPred-zenodo/checksums.sha256` after all edits.
 
 ## AlphaGenome access
 
@@ -58,10 +62,10 @@ action.
 
 ## Final checks
 
-- [ ] Run `pytest` in a clean environment and confirm all tests pass.
-- [ ] Run `python -m build` and confirm the wheel/sdist build succeeds.
-- [ ] Run the CLI on `examples/sample.vcf` both with and without `GNOMAD_VCF`.
-- [ ] Verify the Zenodo archive checksums with `sha256sum -c checksums.sha256`.
+- [x] Run `pytest` in a clean environment and confirm all tests pass.
+- [x] Run `python -m build` and confirm the wheel/sdist build succeeds.
+- [x] Run the CLI on `examples/sample.vcf` both with and without `GNOMAD_VCF`.
+- [x] Verify the Zenodo archive checksums with `sha256sum -c checksums.sha256`.
 - [x] Choose an open-source license (Apache-2.0).
 - [ ] Add repository topics/badges on GitHub once the repo is public.
 
