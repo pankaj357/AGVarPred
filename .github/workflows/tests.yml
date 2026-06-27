@@ -1,0 +1,73 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+
+      - name: Run unit tests
+        run: pytest tests/ -v
+
+      - name: Verify model manifests and checksums
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from AGVarPred.pipeline import list_models, load_active_model_map, validate_manifest
+          from agvarpred_core.utils import sha256_file
+
+          model_root = Path("model")
+          mapping = load_active_model_map(model_root)
+          assert mapping["default"] == "model_full"
+          assert mapping["no_af"] == "model_no_af"
+
+          for name in list_models(model_root):
+              manifest = validate_manifest(model_root, name)
+              print(f"{name}: {manifest['model_version']} ({manifest['model_type']}, "
+                    f"{manifest['selected_feature_count']} features)")
+          PY
+
+      - name: Verify CLI auto fallback (no gnomAD)
+        run: |
+          AGVarPred predict examples/sample.vcf \
+            --output /tmp/fallback_pred.csv \
+            --alpha-mode precomputed \
+            --alpha-dir examples/alpha_features/
+          python - <<'PY'
+          import pandas as pd
+          df = pd.read_csv("/tmp/fallback_pred.csv")
+          assert df["model_type"].iloc[0] == "no_AF"
+          assert df["af_source"].iloc[0] == "none"
+          print("Fallback OK:", len(df), "predictions")
+          PY
+
+      - name: Verify Zenodo archive checksums
+        run: |
+          cd AGVarPred-zenodo
+          sha256sum -c checksums.sha256
+
+      - name: Build package
+        run: |
+          pip install build
+          python -m build

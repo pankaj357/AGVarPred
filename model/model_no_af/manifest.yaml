@@ -1,0 +1,23 @@
+model_version: model_no_af
+model_name: AGVarPred v1.0 pathogenicity classifier (no-AF fallback model)
+model_type: no_AF
+training_dataset: clinvar_gold_grch38_clean
+training_date: "2026-06-26"
+git_commit: "b89f0c277ea212c1b90adace79ee230c1e854872"
+feature_list_file: selected_features.txt
+selected_feature_count: 119
+threshold: 0.45
+calibration: isotonic_regression
+scaler: robust_scaler
+imputation: median
+alphagenome_version: "0.6.1"
+gnomad_version: "gnomAD exomes r2.1.1 liftover to GRCh38 (allele-frequency feature excluded)"
+vep_version: "Ensembl VEP (as annotated in gnomAD exomes r2.1.1)"
+package_version: "1.0.0"
+pipeline_file: final_pipeline.pkl
+pipeline_sha256: 0c92c448a5f22459c279d6fe2dccbbaa665736c60be71d292e3d622f5cd33583
+notes: |
+  Fallback model used when a local gnomAD VCF or online AF/VEP provider is
+  unavailable. It is identical to the primary model except that the gnomAD_AF
+  feature is excluded. Prediction accuracy may differ slightly from the full
+  model, especially for variants where allele frequency is informative.

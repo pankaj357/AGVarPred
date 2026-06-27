@@ -1,0 +1,21 @@
+Code reference for AGVarPred v1.0.0
+====================================
+
+The software and reproducibility scripts corresponding to this Zenodo archive
+are available at the GitHub release:
+
+    https://github.com/pankaj357/AGVarPred/releases/tag/v1.0.0
+
+Repository URL:
+    https://github.com/pankaj357/AGVarPred
+
+This Zenodo archive contains only the frozen reproducible artifacts:
+- trained models (model_full and model_no_af)
+- selected feature lists
+- train/cal/test split definitions
+- benchmark definitions
+- performance metrics
+- checksums
+
+For installation instructions, documentation, and the full source code, please
+visit the GitHub repository.

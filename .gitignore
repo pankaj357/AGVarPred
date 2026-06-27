@@ -1,0 +1,63 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv
+venv/
+ENV/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Logs and intermediate outputs
+*.log
+logs/
+*.out
+
+# Model outputs and large intermediate data (kept under model/ but not all checkpoints)
+*.pkl
+!model/**/*.pkl
+*.h5
+
+# Large external data files
+*.vcf.gz
+*.vcf.bgz
+*.tbi
+external_data/
+
+# OS files
+.DS_Store
+Thumbs.db

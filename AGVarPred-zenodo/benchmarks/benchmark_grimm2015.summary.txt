@@ -1,0 +1,12 @@
+Grimm2015 Independent Benchmark Summary
+==================================================
+Total variants: 5260
+Pathogenic (P/LP): 512
+Benign (B/LB): 4748
+Unique genes: 3112
+
+Per source:
+source
+swissvar_selected      2633
+varibench_selected     2403
+predictSNP_selected     224

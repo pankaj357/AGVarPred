@@ -1,0 +1,82 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "AGVarPred"
+version = "1.0.0"
+description = "Germline variant pathogenicity prediction using AlphaGenome functional genomics scores."
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Pankaj Kumar", email = "ft.pank@gmail.com"},
+    {name = "Kanaka K. K.", email = "kkokay07@gmail.com"},
+]
+maintainers = [
+    {name = "Pankaj Kumar", email = "ft.pank@gmail.com"},
+    {name = "Kanaka K. K.", email = "kkokay07@gmail.com"},
+]
+keywords = [
+    "variant pathogenicity",
+    "machine learning",
+    "functional genomics",
+    "AlphaGenome",
+    "gnomAD",
+    "VEP",
+    "ClinVar",
+    "genomics",
+    "bioinformatics",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+dependencies = [
+    "pandas>=1.5.0",
+    "numpy>=1.23.0",
+    "pyyaml>=6.0",
+    "joblib>=1.2.0",
+    "scikit-learn>=1.8.0,<1.10.0",
+    "lightgbm>=4.0.0",
+    "pysam>=0.21.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0", "pytest-cov"]
+# The AlphaGenome SDK is a local/optional dependency. Install it separately
+# according to the official AlphaGenome instructions.
+alphagenome = []
+
+# Optional online AF provider dependencies can be added here in the future.
+
+[project.scripts]
+AGVarPred = "AGVarPred.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/pankaj357/AGVarPred"
+Repository = "https://github.com/pankaj357/AGVarPred"
+Documentation = "https://github.com/pankaj357/AGVarPred/blob/main/docs"
+"Bug Tracker" = "https://github.com/pankaj357/AGVarPred/issues"
+Changelog = "https://github.com/pankaj357/AGVarPred/blob/main/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+AGVarPred = ["py.typed"]
+agvarpred_core = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra -q"

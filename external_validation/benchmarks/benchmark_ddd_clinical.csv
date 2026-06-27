@@ -1,0 +1,14 @@
+chrom,pos,ref,alt,gene,label,source,dataset
+3,132682759,G,C,NPHP3-ACAD11,0,DDD,ddd_clinical
+3,132682793,A,G,NPHP3-ACAD11,0,DDD,ddd_clinical
+6,31965958,T,A,SKIV2L,1,ACMG,ddd_clinical
+10,27860711,C,T,ARMC4,0,DDD,ddd_clinical
+16,86567631,A,G,FOXC2-AS1,1,DDD,ddd_clinical
+21,43172255,A,G,CRYAA2,0,DDD,ddd_clinical
+21,43418466,G,C,SIK1B,0,DDD,ddd_clinical
+22,24322157,G,A,SPECC1L-ADORA2A,0,DDD,ddd_clinical
+22,24322550,G,A,SPECC1L-ADORA2A,1,DDD,ddd_clinical
+22,24334411,C,G,SPECC1L-ADORA2A,0,DDD,ddd_clinical
+X,49191640,C,T,SYP,0,DDD,ddd_clinical
+X,119581587,C,T,UBE2A,1,DDD,ddd_clinical
+X,119583173,C,T,UBE2A,1,DDD,ddd_clinical

@@ -1,0 +1,25 @@
+model_version: model_full
+model_name: AGVarPred v1.0 pathogenicity classifier (full model)
+model_type: full
+training_dataset: clinvar_gold_grch38_clean
+training_date: "2026-06-26"
+git_commit: "b89f0c277ea212c1b90adace79ee230c1e854872"
+feature_list_file: selected_features.txt
+selected_feature_count: 120
+threshold: 0.42
+calibration: isotonic_regression
+scaler: robust_scaler
+imputation: median
+alphagenome_version: "0.6.1"
+gnomad_version: "gnomAD exomes r2.1.1 liftover to GRCh38"
+vep_version: "Ensembl VEP (as annotated in gnomAD exomes r2.1.1)"
+package_version: "1.0.0"
+pipeline_file: final_pipeline.pkl
+pipeline_sha256: b428f96f0c28bd9ffd785e3b10dcae4dafcdc65889a0686aaf19a9ef101f408f
+notes: |
+  This is the primary production model. It was trained on ClinVar germline
+  variants (GRCh38) labeled Pathogenic or Benign, using 120 selected features
+  composed of AlphaGenome functional genomic scores, gnomAD allele frequency,
+  and VEP-derived annotations. The final estimator is a regularized LightGBM
+  classifier, calibrated with isotonic regression and threshold-tuned on the
+  calibration set to maximize F1.

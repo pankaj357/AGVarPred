@@ -1,0 +1,20 @@
+# Python dependencies for reproducing the AGVarPred research pipeline.
+# Install with: pip install -r requirements.txt
+
+pandas>=1.5.0
+numpy>=1.23.0
+pyyaml>=6.0
+joblib>=1.2.0
+scikit-learn>=1.8.0,<1.10.0
+lightgbm>=4.0.0
+xgboost>=2.0.0
+optuna>=3.0.0
+shap>=0.42.0
+pysam>=0.21.0
+matplotlib>=3.6.0
+seaborn>=0.12.0
+tqdm>=4.60.0
+pyarrow>=10.0.0
+
+# AlphaGenome SDK must be installed separately from its local source directory.
+# alphagenome

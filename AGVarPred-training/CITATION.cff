@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: |
+  If you use this software, please cite both the software itself and the
+  associated Zenodo archive.
+type: software
+title: "AGVarPred: germline variant pathogenicity prediction using AlphaGenome functional genomics"
+version: 1.0.0
+date-released: "2026-06-26"
+authors:
+  - family-names: "Kumar"
+    given-names: "Pankaj"
+    orcid: "https://orcid.org/0009-0006-3422-8881"
+    affiliation: "ICAR-Indian Agricultural Research Institute, New Delhi"
+  - family-names: "K. K."
+    given-names: "Kanaka"
+    orcid: "https://orcid.org/0000-0002-1397-6286"
+    affiliation: "ICAR-Indian Institute of Agricultural Biotechnology, Ranchi"
+repository-code: "https://github.com/pankaj357/AGVarPred"
+license: Apache-2.0
+keywords:
+  - variant pathogenicity
+  - machine learning
+  - functional genomics
+  - AlphaGenome
+  - gnomAD
+  - VEP
+  - ClinVar
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.TODO"
+    description: "Zenodo archive containing the trained models, splits, and benchmarks."

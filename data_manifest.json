@@ -1,0 +1,28 @@
+{
+  "description": "Large external datasets required by the pipeline. These files are NOT checked into the repository and must be downloaded separately.",
+  "datasets": [
+    {
+      "name": "gnomad_exomes_liftover_grch38",
+      "filename": "gnomad.exomes.r2.1.1.sites.liftover_grch38.vcf.bgz",
+      "size_bytes": null,
+      "size_human": ">10 GB",
+      "source_url": "gs://gcp-public-data--gnomad/release/2.1.1/liftover_grch38/vcf/exomes/gnomad.exomes.r2.1.1.sites.liftover_grch38.vcf.bgz",
+      "https_url": "https://storage.googleapis.com/gcp-public-data--gnomad/release/2.1.1/liftover_grch38/vcf/exomes/gnomad.exomes.r2.1.1.sites.liftover_grch38.vcf.bgz",
+      "index_url": "https://storage.googleapis.com/gcp-public-data--gnomad/release/2.1.1/liftover_grch38/vcf/exomes/gnomad.exomes.r2.1.1.sites.liftover_grch38.vcf.bgz.tbi",
+      "release": "gnomAD v2.1.1 liftover to GRCh38",
+      "used_by": [
+        "feature_labbling.py",
+        "external_validation/scripts/scoring_core.py",
+        "external_validation/scripts/build_new_benchmarks.py",
+        "external_validation/scripts/build_cancer_hotspot_benchmark.py",
+        "external_validation/scripts/extract_vep_for_external.py",
+        "external_validation/scripts/extract_vep_tabix.py",
+        "external_validation/scripts/score_mave_multi_gene.py"
+      ],
+      "note": "This VCF supplies gnomAD allele frequencies and VEP annotations. It must be accessible at the path pointed to by the GNOMAD_VCF environment variable (default: external_data/gnomad.exomes.r2.1.1.sites.liftover_grch38.vcf.bgz)."
+    }
+  ],
+  "environment_variables": {
+    "GNOMAD_VCF": "Absolute or relative path to the gnomAD VCF (.bgz) file."
+  }
+}

@@ -1,0 +1,9 @@
+chrom,pos,ref,alt,gene,label,disease,dataset
+13,76991955,C,A,UNKNOWN,0,Epilepsy,pathpredictor
+13,76991956,G,C,UNKNOWN,0,Epilepsy,pathpredictor
+13,76992000,G,C,UNKNOWN,0,Epilepsy,pathpredictor
+13,76992067,C,G,UNKNOWN,0,Epilepsy,pathpredictor
+7,146116949,G,A,UNKNOWN,0,Epilepsy,pathpredictor
+7,146116959,C,T,UNKNOWN,0,Epilepsy,pathpredictor
+18,31545754,C,T,DSG2-AS1,0,Cardiomyopathy,pathpredictor
+18,31545820,G,T,DSG2-AS1,1,Cardiomyopathy,pathpredictor
