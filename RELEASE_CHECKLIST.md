@@ -1,4 +1,4 @@
-# AGVarPred v1.0.0 Release Checklist
+# AGVarPred v1.0.0 / v1.0.1 Release Checklist
 
 This file lists the remaining steps to complete the public GitHub repository
 and Zenodo release. Items marked with `[x]` are complete; `[ ]` still require
@@ -9,7 +9,7 @@ action.
 - [x] Replace `<GITHUB_ORG>` with the GitHub user or organization name
       (`pankaj357`).
 - [x] Decide the final repository name (`AGVarPred`).
-- [ ] Create the public GitHub repository at:
+- [x] Create the public GitHub repository at:
       `https://github.com/pankaj357/AGVarPred`
 - [x] Update all URLs in:
   - `README.md`
@@ -35,8 +35,9 @@ action.
 ## Zenodo and DOI
 
 - [x] Initialize git and tag `v1.0.0` locally.
-- [ ] Create a GitHub Release tagged `v1.0.0` on the public repository.
-- [ ] Link the GitHub repository to Zenodo and create the v1.0.0 Zenodo record.
+- [x] Create/push `v1.0.1` tag on the fixed commit.
+- [ ] Create a GitHub Release tagged `v1.0.1` on the public repository.
+- [ ] Link the GitHub repository to Zenodo and create the Zenodo record.
 - [ ] Replace `10.5281/zenodo.TODO` in all `CITATION.cff` files, `README.md`,
       and `MODEL_CARD.md` with the real DOI.
 - [x] Update `AGVarPred-zenodo/code_reference.txt` with the real GitHub Release URL.
@@ -51,8 +52,15 @@ action.
   - `AGVarPred-zenodo/model/model_no_af/manifest.yaml`
   with the actual commit SHA (`52a8ede5e1c7b437d7bdf760016325a35f9848f7`).
   Note: this SHA refers to the initial release commit that contains the model
-  artifacts. The `v1.0.0` tag points to the final metadata commit.
+  artifacts.
 - [x] Regenerate `AGVarPred-zenodo/checksums.sha256` after all edits.
+
+## CI compatibility fixes applied
+
+- [x] Raise `requires-python` to `>=3.11` and update CI matrix.
+- [x] Add `pyarrow` runtime dependency for Parquet support.
+- [x] Include `AGVarPred-zenodo/model/**/*.pkl` in Git tracking.
+- [x] Verify GitHub Actions `tests` workflow passes on Python 3.11, 3.12, 3.13.
 
 ## AlphaGenome access
 
