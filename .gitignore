@@ -50,6 +50,7 @@ logs/
 # Model outputs and large intermediate data (kept under model/ but not all checkpoints)
 *.pkl
 !model/**/*.pkl
+!AGVarPred-zenodo/model/**/*.pkl
 *.h5
 
 # Large external data files
