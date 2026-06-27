@@ -49,6 +49,7 @@ dependencies = [
     "scikit-learn>=1.8.0,<1.10.0",
     "lightgbm>=4.0.0",
     "pysam>=0.21.0",
+    "pyarrow>=10.0.0",
 ]
 
 [project.optional-dependencies]
