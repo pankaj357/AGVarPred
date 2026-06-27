@@ -2,23 +2,29 @@
 
 from __future__ import annotations
 
-import json
+import hashlib
 import os
+from importlib import resources
 from pathlib import Path
 from typing import Any
 
 import yaml
 
-from agvarpred_core.utils import sha256_file
+
+def _as_resource(model_root: str | Path | resources.abc.Traversable) -> Path | resources.abc.Traversable:
+    """Return a path-like or package resource for ``model_root``."""
+    if isinstance(model_root, (str, Path)):
+        return Path(model_root)
+    return model_root
 
 
-def get_model_root(model_dir: str | Path | None = None) -> Path:
+def get_model_root(model_dir: str | Path | None = None) -> Path | resources.abc.Traversable:
     """Resolve the root directory containing model versions.
 
     Resolution order:
         1. ``model_dir`` argument.
         2. ``AGVARPRED_MODEL_DIR`` environment variable.
-        3. Bundled ``model/`` directory inside the installed AGVarPred package.
+        3. Bundled ``model/`` directory shipped as package data.
     """
     if model_dir is not None:
         return Path(model_dir).resolve()
@@ -28,18 +34,16 @@ def get_model_root(model_dir: str | Path | None = None) -> Path:
         return Path(env_path).resolve()
 
     # Installed-package fallback: models are shipped as package data.
-    import AGVarPred
-
-    return (Path(AGVarPred.__file__).resolve().parent / "model").resolve()
+    return resources.files("AGVarPred") / "model"
 
 
-def load_active_model_map(model_root: str | Path) -> dict[str, str]:
+def load_active_model_map(model_root: str | Path | resources.abc.Traversable) -> dict[str, str]:
     """Load ``active_model.json`` and return the full mapping."""
-    model_root = Path(model_root)
+    model_root = _as_resource(model_root)
     active_path = model_root / "active_model.json"
     if active_path.exists():
-        with open(active_path, "r") as fh:
-            data = json.load(fh)
+        with active_path.open("r") as fh:
+            data = yaml.safe_load(fh)
         return {
             "default": data.get("default"),
             "full": data.get("full") or data.get("default"),
@@ -47,7 +51,11 @@ def load_active_model_map(model_root: str | Path) -> dict[str, str]:
         }
 
     # Fallback: infer from directories
-    versions = [d.name for d in model_root.iterdir() if d.is_dir() and (d / "manifest.yaml").exists()]
+    versions = [
+        d.name
+        for d in model_root.iterdir()
+        if d.is_dir() and (d / "manifest.yaml").exists()
+    ]
     return {
         "default": versions[0] if versions else None,
         "full": versions[0] if versions else None,
@@ -55,7 +63,7 @@ def load_active_model_map(model_root: str | Path) -> dict[str, str]:
     }
 
 
-def load_active_model(model_root: str | Path) -> str:
+def load_active_model(model_root: str | Path | resources.abc.Traversable) -> str:
     """Return the default model version from ``active_model.json``."""
     mapping = load_active_model_map(model_root)
     default = mapping.get("default")
@@ -67,7 +75,7 @@ def load_active_model(model_root: str | Path) -> str:
 
 
 def resolve_model_name(
-    model_root: str | Path,
+    model_root: str | Path | resources.abc.Traversable,
     requested: str | None,
     af_source_name: str,
 ) -> str:
@@ -80,7 +88,7 @@ def resolve_model_name(
     af_source_name:
         Name of the resolved AF source (``local_gnomad``, ``online``, ``none``).
     """
-    model_root = Path(model_root)
+    model_root = _as_resource(model_root)
     mapping = load_active_model_map(model_root)
 
     if requested:
@@ -105,23 +113,39 @@ def resolve_model_name(
     return mapping.get("no_af") or mapping.get("default")
 
 
-def load_manifest(model_root: str | Path, model_name: str) -> dict[str, Any]:
+def load_manifest(
+    model_root: str | Path | resources.abc.Traversable,
+    model_name: str,
+) -> dict[str, Any]:
     """Load ``manifest.yaml`` for a specific model version."""
-    manifest_path = Path(model_root) / model_name / "manifest.yaml"
+    model_root = _as_resource(model_root)
+    manifest_path = model_root / model_name / "manifest.yaml"
     if not manifest_path.exists():
         raise FileNotFoundError(f"Model manifest not found: {manifest_path}")
-    with open(manifest_path, "r") as fh:
+    with manifest_path.open("r") as fh:
         return yaml.safe_load(fh)
 
 
-def validate_manifest(model_root: str | Path, model_name: str) -> dict[str, Any]:
+def _sha256_of_resource(resource: resources.abc.Traversable) -> str:
+    """Compute the SHA256 hex digest of a package resource or file."""
+    h = hashlib.sha256()
+    with resource.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(8192), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def validate_manifest(
+    model_root: str | Path | resources.abc.Traversable,
+    model_name: str,
+) -> dict[str, Any]:
     """Load manifest and verify the pipeline file checksum."""
-    model_root = Path(model_root)
+    model_root = _as_resource(model_root)
     manifest = load_manifest(model_root, model_name)
     pipeline_file = model_root / model_name / manifest["pipeline_file"]
     expected = manifest.get("pipeline_sha256")
     if expected:
-        actual = sha256_file(pipeline_file)
+        actual = _sha256_of_resource(pipeline_file)
         if actual != expected:
             raise ValueError(
                 f"SHA256 mismatch for {pipeline_file}: expected {expected}, got {actual}"
@@ -129,10 +153,11 @@ def validate_manifest(model_root: str | Path, model_name: str) -> dict[str, Any]
     return manifest
 
 
-def list_models(model_root: str | Path | None = None) -> list[str]:
+def list_models(model_root: str | Path | resources.abc.Traversable | None = None) -> list[str]:
     """Return the names of available model versions."""
-    model_root = get_model_root(model_root)
+    model_root = get_model_root(model_root) if model_root is None else _as_resource(model_root)
     return sorted(
-        d.name for d in model_root.iterdir()
+        d.name
+        for d in model_root.iterdir()
         if d.is_dir() and (d / "manifest.yaml").exists()
     )

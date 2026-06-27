@@ -56,11 +56,17 @@ def valid_dna_alleles(*alleles: str) -> bool:
 
 
 def sha256_file(path: str | Path) -> str:
-    """Compute the SHA256 hex digest of a file."""
+    """Compute the SHA256 hex digest of a file or package resource."""
     h = hashlib.sha256()
-    with open(path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(8192), b""):
-            h.update(chunk)
+    if hasattr(path, "open"):
+        # Support importlib.resources Traversable objects.
+        with path.open("rb") as fh:
+            for chunk in iter(lambda: fh.read(8192), b""):
+                h.update(chunk)
+    else:
+        with open(path, "rb") as fh:
+            for chunk in iter(lambda: fh.read(8192), b""):
+                h.update(chunk)
     return h.hexdigest()
 
 

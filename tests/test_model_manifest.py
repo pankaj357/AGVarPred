@@ -1,13 +1,12 @@
-from pathlib import Path
+from importlib import resources
 
 from AGVarPred.pipeline import list_models, load_active_model, load_active_model_map, validate_manifest
 from agvarpred_core.utils import sha256_file
 
 
-def _model_root() -> Path:
-    """Return the bundled model directory path."""
-    import AGVarPred
-    return Path(AGVarPred.__file__).resolve().parent / "model"
+def _model_root():
+    """Return the bundled model directory resource."""
+    return resources.files("AGVarPred") / "model"
 
 
 def test_real_model_manifest():

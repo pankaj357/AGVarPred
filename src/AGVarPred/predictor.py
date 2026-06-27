@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import warnings
 from datetime import datetime, timezone
+from importlib.resources import as_file
 from pathlib import Path
 from typing import Any
 
@@ -45,13 +46,16 @@ class AGVarPredPredictor:
         self.manifest = validate_manifest(self.model_root, self.model_name)
 
         pipeline_path = self.model_root / self.model_name / self.manifest["pipeline_file"]
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=UserWarning)
-            self.pipeline = joblib.load(pipeline_path)
+        feature_path = self.model_root / self.model_name / self.manifest["feature_list_file"]
+        with (
+            as_file(pipeline_path) as pipeline_file,
+            as_file(feature_path) as feature_file,
+        ):
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=UserWarning)
+                self.pipeline = joblib.load(pipeline_file)
 
-        self.feature_selector = FeatureSelector(
-            self.model_root / self.model_name / self.manifest["feature_list_file"]
-        )
+            self.feature_selector = FeatureSelector(feature_file)
         self.threshold = float(self.manifest["threshold"])
         self.selected_features = list(self.pipeline.get("features", self.feature_selector.selected_features))
         self.model_type = self.manifest.get("model_type", "unknown")
