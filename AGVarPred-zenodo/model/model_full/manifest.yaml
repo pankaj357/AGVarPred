@@ -3,7 +3,7 @@ model_name: AGVarPred v1.0 pathogenicity classifier (full model)
 model_type: full
 training_dataset: clinvar_gold_grch38_clean
 training_date: "2026-06-26"
-git_commit: "b89f0c277ea212c1b90adace79ee230c1e854872"
+git_commit: "52a8ede5e1c7b437d7bdf760016325a35f9848f7"
 feature_list_file: selected_features.txt
 selected_feature_count: 120
 threshold: 0.42
