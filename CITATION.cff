@@ -4,8 +4,8 @@ message: |
   associated Zenodo archive.
 type: software
 title: "AGVarPred: germline variant pathogenicity prediction using AlphaGenome functional genomics"
-version: 1.0.0
-date-released: "2026-06-26"
+version: 1.0.3
+date-released: "2026-06-27"
 authors:
   - family-names: "Kumar"
     given-names: "Pankaj"

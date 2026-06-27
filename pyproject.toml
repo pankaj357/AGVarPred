@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "AGVarPred"
-version = "1.0.0"
+version = "1.0.3"
 description = "Germline variant pathogenicity prediction using AlphaGenome functional genomics scores."
 readme = "README.md"
 license = "Apache-2.0"
@@ -74,7 +74,7 @@ Changelog = "https://github.com/pankaj357/AGVarPred/blob/main/CHANGELOG.md"
 where = ["src"]
 
 [tool.setuptools.package-data]
-AGVarPred = ["py.typed"]
+AGVarPred = ["py.typed", "model/**/*"]
 agvarpred_core = ["py.typed"]
 
 [tool.pytest.ini_options]

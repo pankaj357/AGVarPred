@@ -18,7 +18,7 @@ def get_model_root(model_dir: str | Path | None = None) -> Path:
     Resolution order:
         1. ``model_dir`` argument.
         2. ``AGVARPRED_MODEL_DIR`` environment variable.
-        3. ``model/`` directory at the repository root (works with editable installs).
+        3. Bundled ``model/`` directory inside the installed AGVarPred package.
     """
     if model_dir is not None:
         return Path(model_dir).resolve()
@@ -27,9 +27,10 @@ def get_model_root(model_dir: str | Path | None = None) -> Path:
     if env_path:
         return Path(env_path).resolve()
 
-    # Editable-install fallback: AGVarPred/src/AGVarPred/pipeline.py -> repo root
-    repo_root = Path(__file__).resolve().parents[2]
-    return (repo_root / "model").resolve()
+    # Installed-package fallback: models are shipped as package data.
+    import AGVarPred
+
+    return (Path(AGVarPred.__file__).resolve().parent / "model").resolve()
 
 
 def load_active_model_map(model_root: str | Path) -> dict[str, str]:

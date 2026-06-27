@@ -4,9 +4,14 @@ from AGVarPred.pipeline import list_models, load_active_model, load_active_model
 from agvarpred_core.utils import sha256_file
 
 
+def _model_root() -> Path:
+    """Return the bundled model directory path."""
+    import AGVarPred
+    return Path(AGVarPred.__file__).resolve().parent / "model"
+
+
 def test_real_model_manifest():
-    repo_root = Path(__file__).resolve().parents[1]
-    model_root = repo_root / "model"
+    model_root = _model_root()
     assert model_root.exists()
 
     mapping = load_active_model_map(model_root)
@@ -34,15 +39,14 @@ def test_real_model_manifest():
 
 
 def test_no_af_model_manifest():
-    repo_root = Path(__file__).resolve().parents[1]
-    model_root = repo_root / "model"
+    model_root = _model_root()
     manifest = validate_manifest(model_root, "model_no_af")
     assert manifest["model_type"] == "no_AF"
     assert manifest["selected_feature_count"] == 119
 
 
 def test_list_models():
-    repo_root = Path(__file__).resolve().parents[1]
-    models = list_models(repo_root / "model")
+    model_root = _model_root()
+    models = list_models(model_root)
     assert "model_full" in models
     assert "model_no_af" in models
