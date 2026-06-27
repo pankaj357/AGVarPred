@@ -47,5 +47,4 @@ The complete research pipeline is in `AGVarPred-training/`.
 Frozen model artifacts, splits, benchmark definitions, and metrics are archived
 in `AGVarPred-zenodo/` and uploaded to Zenodo with a DOI. See
 `AGVarPred-zenodo/code_reference.txt` for the GitHub release link and
-`RELEASE_CHECKLIST.md` for the metadata placeholders that must be replaced
-before publication.
+`RELEASE_CHECKLIST.md` for the remaining Zenodo DOI step.
