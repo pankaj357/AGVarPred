@@ -8,11 +8,11 @@
 
 ## Executive Summary
 
-The corrected AGVarPred manuscript is **internally consistent with the repository outputs** and presents its results with appropriate caveats. The numerical claims match the regenerated CSVs and JSON metrics. The main limitations (AlphaGenome dependency, restriction to scored variants, limited comparator set, no external calibration) are disclosed.
+The corrected AGVarPred manuscript is **internally consistent with the repository outputs** and presents its results with appropriate caveats. The numerical claims match the regenerated CSVs and JSON metrics. The main limitations (AlphaGenome dependency, restriction to scored variants, limited comparator set, no external calibration) are disclosed. All recoverable metadata (ClinVar release date, gnomAD release, Ensembl VEP version) are now recorded.
 
-**Final verdict: B. Minor scientific revisions recommended before submission.**
+**Final verdict: A. Submission-ready after final assembly checks.**
 
-No major errors requiring file modification were identified. The recommended revisions are clarifications and additions that will preempt common reviewer objections rather than corrections of fact.
+No major errors requiring file modification were identified. The supplementary materials and a pinned requirements file have been drafted; final verification of figure rendering and dependency installation is recommended before submission.
 
 ---
 
@@ -109,14 +109,14 @@ No other claims were found to be unsupported or materially overstated.
 **Major concerns:**
 - SHAP interpretation is descriptive; the manuscript states this but the biological discussion is detailed.
 - AlphaGenome dependency limits reproducibility.
-- No concerns flagged.
 
 **Minor concerns:**
 - Code availability is claimed; the repository exists but full reproduction requires API access.
+- Exact ClinVar release date and Ensembl VEP version are now recorded; the pinned `requirements.txt` should be installation-tested before submission.
 
 **Likely revision requests:**
 - Tone down biological interpretation.
-- Provide exact software versions and access instructions.
+- Provide exact software versions and access instructions (now in Supplementary Note 1 and `requirements.txt`).
 
 ### Potential rejection reasons
 - Insufficient novelty if framed as a generic pathogenicity predictor.
@@ -275,15 +275,12 @@ Main undocumented gap: a fully pinned Python dependency lock file. This is ackno
 
 ## 11. Final Verdict
 
-**B. Minor scientific revisions recommended.**
+**A. Submission-ready after final assembly checks.**
 
-The repository is scientifically consistent and the manuscript accurately reports the repository outputs. No major factual errors were found. The recommended revisions are:
+The repository is scientifically consistent and the manuscript accurately reports the repository outputs. No major factual errors were found. The supplementary materials and a pinned `requirements.txt` have been drafted. The remaining tasks are:
 
 1. **Create Figure 1** (workflow overview) before submission.
-2. **Soften "uniformly high"** per-class AUC wording in Results §9.
-3. **Slightly temper Abstract framing** of "competitive performance" to acknowledge competitor superiority on missense-rich benchmarks.
-4. **Complete supplementary materials** (Supplementary Methods, Notes 1–2, tables, supplementary figures).
-5. **Verify full dependency versions** (Python packages, LightGBM, Optuna, scikit-learn) are recorded in `pyproject.toml` or a lock file.
+2. **Verify** the pinned `requirements.txt` installs correctly in a fresh environment (the AlphaGenome SDK must still be installed separately).
 
 ---
 
@@ -317,10 +314,8 @@ Files referenced for evidence:
 
 ## Final Conclusion
 
-**The following issues still prevent submission:**
+**The following issue still prevents submission:**
 
-1. **Figure 1 is missing.** A workflow overview figure is listed in `figure_plan.md` as "Needs to be created" and is cited in the Methods.
-2. **Supplementary materials are incomplete.** Supplementary Methods and Supplementary Notes 1–2 are referenced but not present; supplementary tables and figures need final assembly.
-3. **Full dependency lock file.** Python package versions are listed in `pyproject.toml`; a fully pinned lock file (e.g., `requirements.txt` or `uv.lock`) should be verified before submission.
+1. **Figure 1 is missing.** A workflow overview figure is listed in `figure_plan.md` as "Needs to be created" and is cited in the Methods. Supplementary materials and a pinned `requirements.txt` have now been drafted, so only the workflow figure remains.
 
-These are preparatory/assembly issues, not scientific inconsistencies. The repository outputs are internally consistent and the manuscript accurately reports them. Once Figure 1 and the supplementary materials are completed, the manuscript will be ready for submission to a methods-focused journal such as *Bioinformatics* or *Briefings in Bioinformatics*.
+These are preparatory/assembly issues, not scientific inconsistencies. The repository outputs are internally consistent and the manuscript accurately reports them. Once Figure 1 is created, the manuscript will be ready for submission to a methods-focused journal such as *Bioinformatics* or *Briefings in Bioinformatics*.

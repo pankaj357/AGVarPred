@@ -1,0 +1,69 @@
+# Pinned Python dependencies for AGVarPred
+# Generated from the 'pathogenicity' conda training environment (Python 3.11.15)
+# and the '.report_env' environment for packages not present in the training env.
+#
+# Install AGVarPred itself with:
+#   pip install -e .
+#
+# The AlphaGenome SDK is a private/optional dependency and must be installed
+# separately according to the official AlphaGenome instructions.
+
+# Core package dependencies
+numpy==2.4.6
+pandas==3.0.3
+pyarrow==24.0.0
+PyYAML==6.0.3
+joblib==1.5.3
+scikit-learn==1.9.0
+lightgbm==4.6.0
+pysam==0.24.0
+
+# Analysis / plotting
+matplotlib==3.10.9
+seaborn==0.13.2
+scipy==1.17.1
+shap==0.51.0
+optuna==4.9.0
+tqdm==4.67.3
+
+# External data / utilities
+requests==2.34.2
+pyliftover==0.4.1
+
+# Testing
+pytest==9.1.1
+pytest-cov==7.1.0
+
+# Optional: only needed if running the XGBoost ablation script
+# xgboost==2.1.6
+
+# Transitive dependencies (pinned for reproducibility)
+alembic==1.18.4
+certifi==2026.5.20
+charset-normalizer==3.4.7
+cloudpickle==3.1.2
+colorlog==6.10.1
+contourpy==1.3.3
+cramjam==2.11.0
+cycler==0.12.1
+fastparquet==2026.5.0
+fonttools==4.63.0
+fsspec==2026.4.0
+greenlet==3.5.1
+idna==3.18
+kiwisolver==1.5.0
+llvmlite==0.47.0
+Mako==1.3.12
+MarkupSafe==3.0.3
+narwhals==2.22.0
+numba==0.65.1
+packaging==26.0
+pillow==12.2.0
+pyparsing==3.3.2
+python-dateutil==2.9.0.post0
+six==1.17.0
+slicer==0.0.8
+SQLAlchemy==2.0.50
+threadpoolctl==3.6.0
+typing_extensions==4.15.0
+urllib3==2.7.0

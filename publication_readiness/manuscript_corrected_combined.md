@@ -332,3 +332,8 @@ Note. The five independent external benchmarks (top five rows) satisfy gene-hold
 **Figure 6 — Decision-curve analysis.** Decision-curve analysis of AGVarPred on the scored internal ClinVar test set and five independent external benchmarks. Net benefit is shown relative to treat-all and treat-none reference strategies. (a) Internal test set. (b) External benchmarks.
 
 **Figure 7 — Tissue and assay-type SHAP importance.** SHAP-based interpretation of AlphaGenome feature usage. (a) Heatmap of SHAP importance by tissue group and assay type for the top eight tissue groups. (b) Cumulative SHAP contribution across broad tissue groups ranked by total contribution.
+
+
+## Supplementary Materials
+
+Supplementary Methods, Supplementary Note 1 (data sources and software versions), and Supplementary Note 2 (external benchmark independence audits) are provided in `publication_readiness/supplementary_materials_combined.md`. Supplementary Figures 1–6 and Supplementary Tables 1–8 are listed in the same document, with source data and generation scripts available in the repository.

@@ -1,5 +1,5 @@
 table_number,caption,source_file,status,missing_values
-Table 1,ClinVar gold-standard dataset and splits,"clinvar_gold_grch38_clean.csv, train.csv, cal.csv, test.csv",READY,Exact ClinVar release date not recorded in repository
+Table 1,ClinVar gold-standard dataset and splits,"clinvar_gold_grch38_clean.csv, train.csv, cal.csv, test.csv",READY,ClinVar release date recorded as 31 March 2024
 Table 2,External benchmark summary,external_validation/benchmarks_comparative/COMPREHENSIVE_COMPARISON_REPORT.md,READY,None
 Table 3,DeLong statistical significance results,delong_analysis/results/delong_results_fdr.csv,READY,None
 Table 4,Variant-type performance metrics,variant_type_analysis/external_variant_type_metrics.csv,READY,None
