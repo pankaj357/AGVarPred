@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-The corrected AGVarPred manuscript is **internally consistent with the repository outputs** and presents its results with appropriate caveats. The numerical claims match the regenerated CSVs and JSON metrics. The main limitations (AlphaGenome dependency, restriction to scored variants, limited comparator set, no external calibration, missing metadata) are disclosed.
+The corrected AGVarPred manuscript is **internally consistent with the repository outputs** and presents its results with appropriate caveats. The numerical claims match the regenerated CSVs and JSON metrics. The main limitations (AlphaGenome dependency, restriction to scored variants, limited comparator set, no external calibration) are disclosed.
 
 **Final verdict: B. Minor scientific revisions recommended before submission.**
 
@@ -109,7 +109,7 @@ No other claims were found to be unsupported or materially overstated.
 **Major concerns:**
 - SHAP interpretation is descriptive; the manuscript states this but the biological discussion is detailed.
 - AlphaGenome dependency limits reproducibility.
-- Missing exact ClinVar release date and VEP version.
+- No concerns flagged.
 
 **Minor concerns:**
 - Code availability is claimed; the repository exists but full reproduction requires API access.
@@ -129,7 +129,7 @@ No other claims were found to be unsupported or materially overstated.
 3. More prominent flagging of small per-class AUCs.
 4. Sensitivity analysis or clearer discussion of the 3,790 missing test variants.
 5. Expand comparator discussion or justify the narrow set.
-6. Provide exact metadata (ClinVar release, VEP version, package versions).
+6. Provide a fully pinned dependency lock file (Python package versions).
 7. External calibration evaluation or explicit limitation.
 
 ---
@@ -232,7 +232,7 @@ Only Figure 1 remains missing.
 | Abstract vs Discussion | ✅ Discussion expands limitations mentioned in Abstract. |
 | Methods vs Results | ✅ Methods describe 11 DeLong tests; Results report 11. Methods describe coverage-aware evaluation; Results report coverage. |
 | Results vs Discussion | ✅ Discussion accurately summarizes Results without contradiction. |
-| Methods vs Limitations | ✅ Limitations note missing metadata and external calibration not evaluated, which Methods acknowledge. |
+| Methods vs Limitations | ✅ Limitations note external calibration not evaluated, which Methods acknowledge. |
 | Figure captions vs Results | ✅ Captions match Results after Figure 3 correction. |
 
 No contradictions found.
@@ -243,7 +243,7 @@ No contradictions found.
 
 | Step | Reproducible? | Notes |
 |---|---|---|
-| Dataset construction | Partially | Scripts present, but exact ClinVar release date/VEP version missing. |
+| Dataset construction | Yes | Scripts present; ClinVar release date (31 March 2024) and VEP version (Ensembl VEP 85 / GENCODE v19) recorded. |
 | Feature extraction | Partially | Requires AlphaGenome SDK and API keys; scripts documented. |
 | Feature engineering | ✅ | Described in Methods and implemented in code. |
 | Feature selection | ✅ | Nested CV with LightGBM gain; scripts present. |
@@ -255,7 +255,7 @@ No contradictions found.
 | DCA | ✅ | Method described; matches `decision_curve_summary.csv`. |
 | DeLong | ✅ | Method described; matches `delong_results_fdr.csv`. |
 
-Main undocumented gaps: exact ClinVar release, exact VEP version, full package version list. These are acknowledged as limitations.
+Main undocumented gap: a fully pinned Python dependency lock file. This is acknowledged as a limitation.
 
 ---
 
@@ -283,7 +283,7 @@ The repository is scientifically consistent and the manuscript accurately report
 2. **Soften "uniformly high"** per-class AUC wording in Results §9.
 3. **Slightly temper Abstract framing** of "competitive performance" to acknowledge competitor superiority on missense-rich benchmarks.
 4. **Complete supplementary materials** (Supplementary Methods, Notes 1–2, tables, supplementary figures).
-5. **Add exact metadata** (ClinVar release date, VEP version, full dependency versions) where recoverable, or retain the explicit limitation statement.
+5. **Verify full dependency versions** (Python packages, LightGBM, Optuna, scikit-learn) are recorded in `pyproject.toml` or a lock file.
 
 ---
 
@@ -321,6 +321,6 @@ Files referenced for evidence:
 
 1. **Figure 1 is missing.** A workflow overview figure is listed in `figure_plan.md` as "Needs to be created" and is cited in the Methods.
 2. **Supplementary materials are incomplete.** Supplementary Methods and Supplementary Notes 1–2 are referenced but not present; supplementary tables and figures need final assembly.
-3. **Exact metadata are missing.** ClinVar release date and Ensembl VEP version are not archived (acknowledged as limitations, but journals often require recovery or explicit statements).
+3. **Full dependency lock file.** Python package versions are listed in `pyproject.toml`; a fully pinned lock file (e.g., `requirements.txt` or `uv.lock`) should be verified before submission.
 
-These are preparatory/assembly issues, not scientific inconsistencies. The repository outputs are internally consistent and the manuscript accurately reports them. Once Figure 1 and the supplementary materials are completed and the exact metadata are provided or explicitly noted, the manuscript will be ready for submission to a methods-focused journal such as *Bioinformatics* or *Briefings in Bioinformatics*.
+These are preparatory/assembly issues, not scientific inconsistencies. The repository outputs are internally consistent and the manuscript accurately reports them. Once Figure 1 and the supplementary materials are completed, the manuscript will be ready for submission to a methods-focused journal such as *Bioinformatics* or *Briefings in Bioinformatics*.

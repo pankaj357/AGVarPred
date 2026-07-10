@@ -171,7 +171,7 @@ All CLI examples in `AGVarPred/README.md` use the installed `AGVarPred` entry po
 |----------|-------------------|-----------------|
 | `AGVarPred/docs/installation.md` lines 36–38 | "AlphaGenome SDK and API access instructions will be linked here once publicly available" | Add official SDK URL when published; acceptable for preprint |
 | `AGVarPred/RELEASE_REPORT.md` | Zenodo DOI already set to `10.5281/zenodo.20955782` | Verify DOI resolves at submission |
-| All manifests | `vep_version: "Ensembl VEP (as annotated in gnomAD exomes r2.1.1)"` | Strengthen if VEP cache version can be recovered |
+| All manifests | `vep_version: "Ensembl VEP release 85 (as annotated in gnomAD exomes r2.1.1, GENCODE v19)"` | Confirmed from gnomAD v2 annotation metadata; update if a more precise cache build is documented |
 
 ### 2.4 Broken / missing links
 
@@ -351,8 +351,8 @@ Readiness is expressed as the approximate additional work needed before a cohere
 
 ## Critical Action Items Before Any Submission
 
-1. **ClinVar release date**: Identify and record the exact ClinVar `variant_summary.txt` release date used to build `clinvar_gold_grch38_clean.csv`.
-2. **VEP version**: Confirm the Ensembl VEP version embedded in gnomAD exomes r2.1.1; if unavailable, state the limitation explicitly.
+1. **ClinVar release date**: Recorded as 31 March 2024 in the corrected manuscript.
+2. **VEP version**: Confirmed as Ensembl VEP release 85 (GENCODE v19) as annotated in gnomAD exomes r2.1.1; stated explicitly in the corrected manuscript.
 3. **Fig 1**: Produce a workflow/overview figure.
 4. **Methods prose**: Convert the parameter tables above into a coherent Methods section.
 5. **Supplementary Methods/Notes**: Prepare leakage-prevention and independence-audit supplementary materials.
