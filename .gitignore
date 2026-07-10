@@ -98,3 +98,13 @@ ablation_feature_groups_output/
 *.jpg
 *.jpeg
 *.svg
+
+# Top-level workspace duplicates / scratch files (kept out of repo)
+/*.py
+/*.csv
+/*.json
+/*.sh
+/*.txt
+/*.docx
+/*.md
+!/.gitignore
