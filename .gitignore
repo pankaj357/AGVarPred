@@ -1,10 +1,8 @@
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-
-# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -28,6 +26,7 @@ MANIFEST
 venv/
 ENV/
 env/
+.report_env/
 
 # IDEs
 .vscode/
@@ -42,24 +41,60 @@ env/
 htmlcov/
 .tox/
 
-# Logs and intermediate outputs
+# Logs
 *.log
+logs_*/
 logs/
 *.out
 
-# Model outputs and large intermediate data (kept under model/ but not all checkpoints)
-*.pkl
-!model/**/*.pkl
-!src/AGVarPred/model/**/*.pkl
-!AGVarPred-zenodo/model/**/*.pkl
-*.h5
-
-# Large external data files
-*.vcf.gz
-*.vcf.bgz
-*.tbi
+# Large data directories (top-level workspace)
+alphagenome_input/
+chunks_input_*/
 external_data/
+feature_extraction_cal_dataset/
+feature_extraction_test_dataset/
+feature_extraction_train_dataset/
+final_dataset_parts_cal/
+final_dataset_parts_test/
+final_dataset_parts_train/
+output/
 
-# OS files
-.DS_Store
-Thumbs.db
+# Very large external validation / model artifacts
+external_validation/
+final_model_output/
+final_model_output_regularized/
+model_6_minus_af_output/
+feature_selection_output_nested/
+baseline_output/
+ablation_output/
+ablation_feature_groups_output/
+
+# Ignore all top-level dirs by default; selectively allow code + small analysis artifacts
+/*/
+!/AGVarPred/
+!/publication_readiness/
+!/dca_analysis/
+!/delong_analysis/
+!/tissue_shap_analysis/
+!/variant_type_analysis/
+
+# Within allowed analysis dirs, ignore large intermediate files
+*.parquet
+*.pkl
+*.h5
+*.gz
+*.bgz
+*.tbi
+*.vcf
+*.bam
+*.sam
+*.cram
+*.fa
+*.fasta
+*.fq
+*.fastq
+*.png
+*.pdf
+*.jpg
+*.jpeg
+*.svg

@@ -1,0 +1,7 @@
+Biological interpretation of cell-type-specific contributions
+
+The tissue-level SHAP analysis supports the hypothesis that AGVarPred leverages cell-type-specific functional genomics rather than treating AlphaGenome scores as a generic set of annotations. The dominance of Brain / CNS (22.0%) and the strong representation of developmentally active and proliferative cell types is consistent with the biology of germline pathogenicity: many disease-causing variants disrupt regulatory or splicing programs active in specific lineages.
+
+It is important to interpret these rankings cautiously. SHAP importance reflects the marginal contribution of a feature to the trained model, not necessarily the causal tissue of disease. A high contribution from a cell line such as HepG2_EFO_0001187 may reflect the abundance or quality of AlphaGenome assays in that biosample rather than a primary disease-relevant tissue. Conversely, tissues with low SHAP contribution are not irrelevant to disease; they may simply be less represented in the selected feature set or less predictive given the training data.
+
+Nevertheless, the observed distribution—broad across tissues but concentrated in developmentally and transcriptionally active cell types—provides biological plausibility for the model's predictions and distinguishes AGVarPred from predictors that rely solely on protein-level or conservation-based features.

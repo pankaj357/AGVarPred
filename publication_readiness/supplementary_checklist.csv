@@ -1,0 +1,13 @@
+item,type,status,notes
+Supplementary Figure S1,Supplementary Figure,READY,ablation_output/ablation_curve.png
+Supplementary Figure S2,Supplementary Figure,READY,ablation_feature_groups_output/* feature-group ablation
+Supplementary Figure S3,Supplementary Figure,READY,final_model_output_regularized/shap_summary.png
+Supplementary Figure S4,Supplementary Figure,READY,tissue_shap_analysis/top_biosamples_barplot.pdf
+Supplementary Figure S5,Supplementary Figure,READY,dca_analysis/figures/decision_curve_internal_test.pdf
+Supplementary Table S1,Supplementary Table,READY,Full selected feature list: feature_selection_output_nested/selected_features.txt
+Supplementary Table S2,Supplementary Table,READY,Full SHAP values: final_model_output_regularized/shap_values_sample.csv
+Supplementary Table S3,Supplementary Table,READY,DeLong raw results: delong_analysis/results/delong_results.csv
+Supplementary Table S4,Supplementary Table,READY,Per-biosample SHAP: tissue_shap_analysis/biosample_shap_importance.csv
+Supplementary Methods,Supplementary Methods,NEEDS PREPARATION,Detailed pipeline commands and environment setup
+Supplementary Note 1,Supplementary Note,NEEDS PREPARATION,Leakage-prevention statistics table
+Supplementary Note 2,Supplementary Note,NEEDS PREPARATION,Benchmark independence audit
