@@ -33,11 +33,9 @@ jobs:
       - name: Verify model manifests and checksums
         run: |
           python - <<'PY'
-          from pathlib import Path
-          from AGVarPred.pipeline import list_models, load_active_model_map, validate_manifest
-          from agvarpred_core.utils import sha256_file
+          from AGVarPred.pipeline import get_model_root, list_models, load_active_model_map, validate_manifest
 
-          model_root = Path("model")
+          model_root = get_model_root()
           mapping = load_active_model_map(model_root)
           assert mapping["default"] == "model_full"
           assert mapping["no_af"] == "model_no_af"

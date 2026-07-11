@@ -1,8 +1,10 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+
+# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -41,16 +43,28 @@ env/
 htmlcov/
 .tox/
 
-# Logs
+# Logs and intermediate outputs
 *.log
-logs_*/
 logs/
+logs_*/
 *.out
+
+# Model outputs and large intermediate data (kept under model/ but not all checkpoints)
+*.pkl
+!model/**/*.pkl
+!src/AGVarPred/model/**/*.pkl
+!AGVarPred-zenodo/model/**/*.pkl
+*.h5
+
+# Large external data files
+*.vcf.gz
+*.vcf.bgz
+*.tbi
+external_data/
 
 # Large data directories (top-level workspace)
 alphagenome_input/
 chunks_input_*/
-external_data/
 feature_extraction_cal_dataset/
 feature_extraction_test_dataset/
 feature_extraction_train_dataset/
@@ -68,27 +82,24 @@ feature_selection_output_nested/
 baseline_output/
 ablation_output/
 ablation_feature_groups_output/
-
-# Ignore all top-level dirs by default; selectively allow code + small analysis artifacts
-/*/
-!/AGVarPred/
-!/dca_analysis/
-!/delong_analysis/
-!/tissue_shap_analysis/
-!/variant_type_analysis/
+xgboost_output/
 
 # Manuscript drafting materials (kept out of public software releases)
 /private_manuscript_backup/
 */manuscript_results.txt
 */manuscript_discussion.txt
 
-# Within allowed analysis dirs, ignore large intermediate files
+# Top-level workspace scratch duplicates (not part of package)
+/*.py
+/*.csv
+/*.sh
+/*.docx
+/*.log
+
+# Large intermediate files (global)
 *.parquet
-*.pkl
-*.h5
 *.gz
 *.bgz
-*.tbi
 *.vcf
 *.bam
 *.sam
@@ -103,12 +114,6 @@ ablation_feature_groups_output/
 *.jpeg
 *.svg
 
-# Top-level workspace duplicates / scratch files (kept out of repo)
-/*.py
-/*.csv
-/*.json
-/*.sh
-/*.txt
-/*.docx
-/*.md
-!/.gitignore
+# OS files
+.DS_Store
+Thumbs.db

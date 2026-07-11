@@ -137,19 +137,18 @@ See [`docs/api.md`](docs/api.md) for the full API reference.
 ## Repository structure
 
 ```
-AGVarPred/
+.
 ├── src/
 │   ├── AGVarPred/          # Public installable package (CLI + predictor)
 │   └── agvarpred_core/     # Internal reusable feature-engineering library
-├── model/                  # Trained model artifacts (separate from source)
-│   ├── active_model.json
-│   ├── model_full/         # Primary production model (with AF)
-│   └── model_no_af/        # Fallback model (without AF)
 ├── tests/                  # Unit and integration tests
 ├── examples/               # Example VCF and precomputed features
 ├── docs/                   # Documentation
+├── scripts/                # Manuscript correction / utility scripts
 ├── AGVarPred-training/     # Full research reproducibility pipeline
 ├── AGVarPred-zenodo/       # Manuscript archive (model, splits, benchmarks)
+├── pyproject.toml          # Package metadata and build configuration
+├── requirements.txt        # Pinned runtime dependencies
 └── community files         # LICENSE, CITATION.cff, CONTRIBUTING.md, etc.
 ```
 

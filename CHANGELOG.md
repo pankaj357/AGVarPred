@@ -10,7 +10,7 @@ All notable changes to AGVarPred will be documented in this file.
 - Removed manuscript drafting materials (`publication_readiness/` markdowns and
   `manuscript_*.txt` files) from the public software repository.
 - Preserved reusable correction scripts by moving them to
-  `AGVarPred/scripts/manuscript_corrections/`.
+  `scripts/manuscript_corrections/`.
 - Restored proper Python packaging: releases now include wheel + source
   distribution assets built with `python -m build`.
 
