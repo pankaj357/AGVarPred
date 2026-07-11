@@ -1,6 +1,0 @@
-benchmark,total_variants,pathogenic,benign,genes,scored_by_agvarpred
-humsavar,14718,1317,13401,5681,14718
-mave_independent,7557,3751,3806,25,7557
-gnomad_benign,4989,0,4989,585,4989
-grimm2015,5258,512,4746,3112,5258
-dvd,8388,195,8193,12,8388

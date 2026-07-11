@@ -13,7 +13,7 @@ imputation: median
 alphagenome_version: "0.6.1"
 gnomad_version: "gnomAD exomes r2.1.1 liftover to GRCh38 (allele-frequency feature excluded)"
 vep_version: "Ensembl VEP release 85 (as annotated in gnomAD exomes r2.1.1, GENCODE v19)"
-package_version: "1.0.0"
+package_version: "1.0.8"
 pipeline_file: final_pipeline.pkl
 pipeline_sha256: 0c92c448a5f22459c279d6fe2dccbbaa665736c60be71d292e3d622f5cd33583
 notes: |

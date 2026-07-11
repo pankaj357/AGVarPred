@@ -2,6 +2,22 @@
 
 All notable changes to AGVarPred will be documented in this file.
 
+## [1.0.8] - 2026-07-10
+
+### Changed
+- Synchronized all version references to `1.0.8` (`pyproject.toml`, `__init__.py`,
+  `CITATION.cff`, model manifests, README citation).
+- Removed manuscript drafting materials (`publication_readiness/` markdowns and
+  `manuscript_*.txt` files) from the public software repository.
+- Preserved reusable correction scripts by moving them to
+  `AGVarPred/scripts/manuscript_corrections/`.
+- Restored proper Python packaging: releases now include wheel + source
+  distribution assets built with `python -m build`.
+
+### Fixed
+- GitHub Releases v1.0.5–v1.0.7 no longer represent the latest installable
+  artifacts; v1.0.8 provides the canonical wheel and sdist.
+
 ## [1.0.4] - 2026-06-27
 
 ### Fixed

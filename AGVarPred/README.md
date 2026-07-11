@@ -170,12 +170,12 @@ GitHub repository.
 
 - **Concept DOI** (always resolves to the latest version):  
   <https://doi.org/10.5281/zenodo.20955782>
-- **Version DOI for v1.0.3**:  
-  <https://doi.org/10.5281/zenodo.20955783>
+- **Version DOI for v1.0.8**:  
+  *(to be added after Zenodo publication)*
 
 ```text
 Kumar, P., & Kanaka, K. K. (2026). AGVarPred: germline variant pathogenicity
-prediction using AlphaGenome functional genomics (Version 1.0.3).
+prediction using AlphaGenome functional genomics (Version 1.0.8).
 Zenodo. https://doi.org/10.5281/zenodo.20955782
 GitHub: https://github.com/pankaj357/AGVarPred
 ```

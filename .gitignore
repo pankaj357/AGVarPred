@@ -72,11 +72,15 @@ ablation_feature_groups_output/
 # Ignore all top-level dirs by default; selectively allow code + small analysis artifacts
 /*/
 !/AGVarPred/
-!/publication_readiness/
 !/dca_analysis/
 !/delong_analysis/
 !/tissue_shap_analysis/
 !/variant_type_analysis/
+
+# Manuscript drafting materials (kept out of public software releases)
+/private_manuscript_backup/
+*/manuscript_results.txt
+*/manuscript_discussion.txt
 
 # Within allowed analysis dirs, ignore large intermediate files
 *.parquet
