@@ -1,10 +1,10 @@
-Code reference for AGVarPred v1.0.0
+Code reference for AGVarPred v1.0.9
 ====================================
 
 The software and reproducibility scripts corresponding to this Zenodo archive
 are available at the GitHub release:
 
-    https://github.com/pankaj357/AGVarPred/releases/tag/v1.0.0
+    https://github.com/pankaj357/AGVarPred/releases/tag/v1.0.9
 
 Repository URL:
     https://github.com/pankaj357/AGVarPred

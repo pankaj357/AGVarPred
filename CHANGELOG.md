@@ -2,6 +2,23 @@
 
 All notable changes to AGVarPred will be documented in this file.
 
+## [1.0.9] - 2026-08-18
+
+### Fixed
+- Regenerated `AGVarPred-zenodo/checksums.sha256` so the frozen archive passes
+  self-verification again after the manifest metadata updates.
+- Restored tracking of `AGVarPred-training/scripts/external_validation/`
+  (benchmark construction and scoring scripts), `examples/sample.vcf`,
+  `examples/alpha_features/`, per-benchmark result JSONs under
+  `external_validation/results/`, and analysis figure sources; these were
+  unintentionally excluded by overly broad `.gitignore` rules, which broke the
+  README quick-start and the CI fallback test on fresh clones.
+- Synchronized the root `data_manifest.json` with the Zenodo copy.
+
+### Changed
+- Bumped version to `1.0.9` across the package, model manifests, and citation
+  files. No functional code changes.
+
 ## [1.0.8] - 2026-07-10
 
 ### Changed

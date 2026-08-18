@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "AGVarPred"
-version = "1.0.8"
+version = "1.0.9"
 description = "Germline variant pathogenicity prediction using AlphaGenome functional genomics scores."
 readme = "README.md"
 license = "Apache-2.0"

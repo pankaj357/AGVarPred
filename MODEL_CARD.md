@@ -1,8 +1,8 @@
-# Model Card: AGVarPred v1.0.8
+# Model Card: AGVarPred v1.0.9
 
 ## Model summary
 
-- **Software version:** 1.0.8
+- **Software version:** 1.0.9
 - **Model versions:** `model_full` (primary), `model_no_af` (fallback)
 - **Task:** Binary classification of germline variants as Pathogenic (1) or Benign (0)
 - **Architecture:** Regularized LightGBM classifier with isotonic calibration

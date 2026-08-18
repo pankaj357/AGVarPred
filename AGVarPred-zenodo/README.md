@@ -1,4 +1,4 @@
-# AGVarPred Zenodo Archive v1.0.0
+# AGVarPred Zenodo Archive v1.0.9
 
 This archive contains the frozen reproducibility artifacts for the AGVarPred
 manuscript. It is designed to be cited via its Zenodo DOI.

@@ -1,6 +1,6 @@
 """agvarpred_core: internal reusable feature-engineering library for AGVarPred."""
 
-__version__ = "1.0.0"
+__version__ = "1.0.9"
 
 from .af_source import AFSource, LocalGnomADSource, OnlineAFSource, NoAFSource, resolve_af_source
 from .feature_generator import FeatureGenerator
