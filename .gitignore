@@ -73,8 +73,10 @@ final_dataset_parts_test/
 final_dataset_parts_train/
 output/
 
-# Very large external validation / model artifacts
-external_validation/
+# Very large external validation / model artifacts (root-level only;
+# nested AGVarPred-training/scripts/external_validation/ scripts are tracked)
+/external_validation/*
+!/external_validation/results/
 final_model_output/
 final_model_output_regularized/
 model_6_minus_af_output/
@@ -95,6 +97,7 @@ xgboost_output/
 /*.sh
 /*.docx
 /*.log
+/*.zip
 
 # Large intermediate files (global)
 *.parquet
@@ -117,3 +120,22 @@ xgboost_output/
 # OS files
 .DS_Store
 Thumbs.db
+
+# ---------------------------------------------------------------------------
+# Whitelist exceptions (must come after the global ignore rules above)
+# ---------------------------------------------------------------------------
+
+# Example data needed by the README quick-start and CI fallback test
+!examples/sample.vcf
+!examples/alpha_features/
+!examples/alpha_features/**
+
+# Manuscript figure sources in the tracked analysis directories
+!dca_analysis/figures/
+!dca_analysis/figures/**
+!delong_analysis/figures/
+!delong_analysis/figures/**
+!variant_type_analysis/*.png
+!variant_type_analysis/*.pdf
+!tissue_shap_analysis/*.png
+!tissue_shap_analysis/*.pdf

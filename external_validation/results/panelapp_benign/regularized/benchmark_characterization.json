@@ -1,0 +1,11 @@
+{
+  "benchmark": "PanelApp Benign (non-training disease genes)",
+  "model": "regularized",
+  "n_total": 1773,
+  "n_genes": 175,
+  "n_fp": 2,
+  "fpr": 0.0011280315848843769,
+  "mean_prob": 0.0011939789614943666,
+  "median_prob": 0.0,
+  "mean_af": 0.08119878816694867
+}

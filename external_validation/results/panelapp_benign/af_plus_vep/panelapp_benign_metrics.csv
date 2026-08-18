@@ -1,0 +1,2 @@
+model,n_variants,n_fp,fpr,mean_prob,median_prob,accuracy,fpr_ci_low,fpr_ci_high
+af_plus_vep,1773,1,0.0005640157924421884,0.002946095608343514,0.0,0.9994359842075579,0.0,0.001692047377326565

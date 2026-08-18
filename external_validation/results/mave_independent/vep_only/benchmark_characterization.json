@@ -1,0 +1,11 @@
+{
+  "benchmark": "MAVE Independent (non-training genes)",
+  "n_total": 7557,
+  "n_pathogenic": 3751,
+  "n_benign": 3806,
+  "n_genes": 25,
+  "score_spearman_rho": -0.060396136448575354,
+  "score_spearman_p": 1.4864901699453386e-07,
+  "score_pearson_r": -0.08399555391960811,
+  "score_pearson_p": 2.602011675501169e-13
+}

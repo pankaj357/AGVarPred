@@ -1,0 +1,2 @@
+model,n_variants,n_fp,fpr,mean_prob,median_prob,accuracy,fpr_ci_low,fpr_ci_high
+af_only,1773,0,0.0,0.003607312176667899,0.0,1.0,0.0,0.0

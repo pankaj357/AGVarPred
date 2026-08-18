@@ -1,0 +1,10 @@
+{
+  "benchmark": "gnomAD Common Benign (non-training genes)",
+  "n_total": 4989,
+  "n_genes": 585,
+  "n_fp": 12,
+  "fpr": 0.0024052916416115455,
+  "mean_prob": 0.003004927221090795,
+  "median_prob": 0.0,
+  "mean_af": 0.0800753143415514
+}

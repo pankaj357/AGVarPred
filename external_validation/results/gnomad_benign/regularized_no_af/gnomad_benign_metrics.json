@@ -1,0 +1,11 @@
+{
+  "overall_n_variants": 4989,
+  "overall_n_benign": 4989,
+  "overall_n_fp": 187,
+  "overall_fpr": 0.03748246141511325,
+  "overall_mean_prob": 0.06799521290437752,
+  "overall_median_prob": 0.0070921985815602835,
+  "overall_accuracy": 0.9625175385848868,
+  "overall_fpr_ci_low": 0.032471437161755864,
+  "overall_fpr_ci_high": 0.04329524954900782
+}

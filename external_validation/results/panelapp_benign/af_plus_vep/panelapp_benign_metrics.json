@@ -1,0 +1,11 @@
+{
+  "model": "af_plus_vep",
+  "n_variants": 1773,
+  "n_fp": 1,
+  "fpr": 0.0005640157924421884,
+  "mean_prob": 0.002946095608343514,
+  "median_prob": 0.0,
+  "accuracy": 0.9994359842075579,
+  "fpr_ci_low": 0.0,
+  "fpr_ci_high": 0.001692047377326565
+}

@@ -1,0 +1,2 @@
+model,n_variants,n_fp,fpr,mean_prob,median_prob,accuracy,fpr_ci_low,fpr_ci_high
+regularized,1773,2,0.0011280315848843769,0.0011939789614943666,0.0,0.9988719684151156,0.0,0.0028200789622109417

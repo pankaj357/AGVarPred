@@ -4,11 +4,13 @@
     {
       "name": "gnomad_exomes_liftover_grch38",
       "filename": "gnomad.exomes.r2.1.1.sites.liftover_grch38.vcf.bgz",
-      "size_bytes": null,
-      "size_human": ">10 GB",
+      "size_bytes": 91604348731,
+      "size_human": "~85.3 GiB",
       "source_url": "gs://gcp-public-data--gnomad/release/2.1.1/liftover_grch38/vcf/exomes/gnomad.exomes.r2.1.1.sites.liftover_grch38.vcf.bgz",
       "https_url": "https://storage.googleapis.com/gcp-public-data--gnomad/release/2.1.1/liftover_grch38/vcf/exomes/gnomad.exomes.r2.1.1.sites.liftover_grch38.vcf.bgz",
       "index_url": "https://storage.googleapis.com/gcp-public-data--gnomad/release/2.1.1/liftover_grch38/vcf/exomes/gnomad.exomes.r2.1.1.sites.liftover_grch38.vcf.bgz.tbi",
+      "index_size_bytes": 934539,
+      "index_size_human": "~913 KiB",
       "release": "gnomAD v2.1.1 liftover to GRCh38",
       "used_by": [
         "feature_labbling.py",

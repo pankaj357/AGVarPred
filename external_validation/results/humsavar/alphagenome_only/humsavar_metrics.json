@@ -1,0 +1,21 @@
+{
+  "overall_n_variants": 14718,
+  "overall_n_pathogenic": 1317,
+  "overall_n_benign": 13401,
+  "overall_roc_auc": 0.6463313717054514,
+  "overall_pr_auc": 0.1526519451098387,
+  "overall_accuracy": 0.7668840875118902,
+  "overall_precision": 0.16078305519897304,
+  "overall_recall": 0.3804100227790433,
+  "overall_f1": 0.2260320324836454,
+  "overall_mcc": 0.1294535410716445,
+  "overall_brier_score": 0.13520374078018055,
+  "overall_sensitivity": 0.3804100227790433,
+  "overall_specificity": 0.8048653085590628,
+  "overall_ppv": 0.16078305519897304,
+  "overall_npv": 0.9296672987415963,
+  "overall_roc_auc_ci_low": 0.6308619557414981,
+  "overall_roc_auc_ci_high": 0.6613308953016628,
+  "overall_mcc_ci_low": 0.10978226915902785,
+  "overall_mcc_ci_high": 0.1496990013455438
+}

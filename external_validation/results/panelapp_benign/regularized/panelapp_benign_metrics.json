@@ -1,0 +1,11 @@
+{
+  "model": "regularized",
+  "n_variants": 1773,
+  "n_fp": 2,
+  "fpr": 0.0011280315848843769,
+  "mean_prob": 0.0011939789614943666,
+  "median_prob": 0.0,
+  "accuracy": 0.9988719684151156,
+  "fpr_ci_low": 0.0,
+  "fpr_ci_high": 0.0028200789622109417
+}

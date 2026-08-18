@@ -1,0 +1,11 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=PASS,Description="All filters passed">
+##INFO=<ID=GENE,Number=.,Type=String,Description="Gene symbol">
+##contig=<ID=15>
+##INFO=<ID=END,Number=1,Type=Integer,Description="Stop position of the interval">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+15	67231868	.	G	A	.	.	GENE=AAGAB
+15	67236060	.	G	A	.	.	GENE=AAGAB
+15	67231875	.	TC	T	.	.	GENE=AAGAB
+15	67254571	.	G	A	.	.	GENE=AAGAB
+15	67208595	.	T	C	.	.	GENE=AAGAB

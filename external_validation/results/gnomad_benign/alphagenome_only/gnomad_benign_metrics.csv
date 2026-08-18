@@ -1,0 +1,2 @@
+overall_n_variants,overall_n_benign,overall_n_fp,overall_fpr,overall_mean_prob,overall_median_prob,overall_accuracy,overall_fpr_ci_low,overall_fpr_ci_high
+4989,4989,769,0.1541391060332732,0.2286476756056969,0.19133574007220217,0.8458608939667268,0.14470835838845458,0.16436159551012228

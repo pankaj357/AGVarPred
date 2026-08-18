@@ -1,0 +1,11 @@
+{
+  "model": "af_only",
+  "n_variants": 1773,
+  "n_fp": 0,
+  "fpr": 0.0,
+  "mean_prob": 0.003607312176667899,
+  "median_prob": 0.0,
+  "accuracy": 1.0,
+  "fpr_ci_low": 0.0,
+  "fpr_ci_high": 0.0
+}
