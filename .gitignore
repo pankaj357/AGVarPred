@@ -145,3 +145,5 @@ Thumbs.db
 webserver/frontend/node_modules/
 webserver/frontend/dist/
 webserver/frontend/.env.local
+
+webserver/.env
