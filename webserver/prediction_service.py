@@ -7,6 +7,7 @@ service. No provider credentials are stored in source control.
 
 from __future__ import annotations
 
+import importlib.metadata
 import importlib.util
 import os
 from functools import lru_cache
@@ -34,8 +35,14 @@ def env_enabled(name: str) -> bool:
     return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "on"}
 
 
-def live_provider_status() -> tuple[bool, str]:
-    """Check non-secret prerequisites for live API-based feature extraction."""
+def live_provider_status(
+    expected_alphagenome_version: str | None = None,
+) -> tuple[bool, str]:
+    """Check non-secret prerequisites for live API-based feature extraction.
+
+    Refuse to serve with a different AlphaGenome SDK version than the one
+    recorded for the frozen model until feature parity is re-validated.
+    """
     api_key = os.getenv("ALPHAGENOME_API_KEY")
     if not api_key:
         return False, "AlphaGenome API key is not configured."
@@ -55,6 +62,19 @@ def live_provider_status() -> tuple[bool, str]:
     if not sdk_available:
         return False, "The AlphaGenome Python SDK is not installed."
 
+    try:
+        installed_version = importlib.metadata.version("alphagenome")
+    except importlib.metadata.PackageNotFoundError:
+        return False, "AlphaGenome SDK package metadata is unavailable."
+
+    if expected_alphagenome_version and installed_version != str(expected_alphagenome_version):
+        return (
+            False,
+            "Installed AlphaGenome SDK version "
+            f"{installed_version} differs from the model's recorded feature version "
+            f"{expected_alphagenome_version}; validate feature parity before serving.",
+        )
+
     return True, "ready"
 
 
@@ -62,7 +82,9 @@ class LivePredictionService:
     """Generate live AlphaGenome + gnomAD/VEP features and score with frozen model."""
 
     def __init__(self, predictor: AGVarPredPredictor):
-        ready, message = live_provider_status()
+        ready, message = live_provider_status(
+            predictor.manifest.get("alphagenome_version")
+        )
         if not ready:
             raise RuntimeError(message)
 
