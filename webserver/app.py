@@ -124,7 +124,9 @@ def get_frozen_predictor() -> AGVarPredPredictor:
 def health() -> HealthResponse:
     """Return service and frozen-model metadata without exposing secrets."""
     predictor = get_frozen_predictor()
-    provider_ready, _ = live_provider_status(\n        predictor.manifest.get("alphagenome_version")\n    )
+    provider_ready, _ = live_provider_status(
+        predictor.manifest.get("alphagenome_version")
+    )
     live_enabled = (
         env_enabled("AGVARPRED_ENABLE_LIVE_PREDICTION")
         and env_enabled("AGVARPRED_ALPHA_TERMS_REVIEWED")
@@ -169,10 +171,7 @@ def predict(request: PredictRequest) -> dict:
     if not provider_ready:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=(
-                "Live feature extraction is not configured. The AlphaGenome SDK, "
-                "ALPHAGENOME_API_KEY, and an indexed GRCh38 gnomAD VCF are required."
-            ),
+            detail=f"Live feature extraction is not ready: {_reason}",
         )
 
     try:
