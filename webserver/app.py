@@ -8,11 +8,11 @@ from __future__ import annotations
 
 import os
 from functools import lru_cache
-from typing import Annotated, Literal
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from AGVarPred import AGVarPredPredictor
 
@@ -74,6 +74,12 @@ class VariantInput(BaseModel):
             return None
         value = value.strip()
         return value or None
+
+    @model_validator(mode="after")
+    def alleles_must_differ(self) -> "VariantInput":
+        if self.ref == self.alt:
+            raise ValueError("ref and alt must differ")
+        return self
 
 
 class PredictRequest(BaseModel):
