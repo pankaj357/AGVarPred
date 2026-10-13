@@ -6,6 +6,7 @@ equivalent live feature-provider adapter has been implemented and validated.
 
 from __future__ import annotations
 
+import logging
 import os
 from functools import lru_cache
 from typing import Literal
@@ -15,6 +16,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from AGVarPred import AGVarPredPredictor
+from agvarpred_core.utils import make_variant_id
+from webserver.prediction_service import env_enabled, get_live_service, live_provider_status
 
 APP_NAME = "AGVarPred Web Server"
 MAX_VARIANTS_PER_REQUEST = 25
@@ -88,6 +91,16 @@ class PredictRequest(BaseModel):
     genome_build: Literal["GRCh38"] = "GRCh38"
     variants: list[VariantInput] = Field(min_length=1, max_length=MAX_VARIANTS_PER_REQUEST)
 
+    @model_validator(mode="after")
+    def variant_ids_must_be_unique(self) -> "PredictRequest":
+        ids = [
+            make_variant_id(item.chrom, item.pos, item.ref, item.alt)
+            for item in self.variants
+        ]
+        if len(ids) != len(set(ids)):
+            raise ValueError("duplicate variants are not allowed in one request")
+        return self
+
 
 class HealthResponse(BaseModel):
     status: str
@@ -111,9 +124,12 @@ def get_frozen_predictor() -> AGVarPredPredictor:
 def health() -> HealthResponse:
     """Return service and frozen-model metadata without exposing secrets."""
     predictor = get_frozen_predictor()
-    live_enabled = os.getenv("AGVARPRED_ENABLE_LIVE_PREDICTION", "false").lower() == "true"
-    # This remains false until a real provider adapter passes integration tests.
-    provider_ready = False
+    provider_ready, _ = live_provider_status()
+    live_enabled = (
+        env_enabled("AGVARPRED_ENABLE_LIVE_PREDICTION")
+        and env_enabled("AGVARPRED_ALPHA_TERMS_REVIEWED")
+        and provider_ready
+    )
     return HealthResponse(
         status="ok",
         service=APP_NAME,
@@ -129,31 +145,51 @@ def health() -> HealthResponse:
 
 @app.post("/api/predict", tags=["prediction"])
 def predict(request: PredictRequest) -> dict:
-    """Validate a request and fail closed until live feature generation is ready.
+    """Generate live features and score variants with the frozen 120-feature model."""
+    predictor = get_frozen_predictor()
 
-    This route must never fabricate a score or substitute an incompatible
-    annotation pipeline. The next development phase will implement the live
-    AlphaGenome + VEP + gnomAD feature adapter, guarded by parity tests against
-    the frozen research workflow.
-    """
-    # Force early model integrity/checksum verification before accepting work.
-    get_frozen_predictor()
+    if not env_enabled("AGVARPRED_ENABLE_LIVE_PREDICTION"):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Live prediction is disabled by the deployment configuration.",
+        )
 
-    live_enabled = os.getenv("AGVARPRED_ENABLE_LIVE_PREDICTION", "false").lower() == "true"
-    if not live_enabled:
+    if not env_enabled("AGVARPRED_ALPHA_TERMS_REVIEWED"):
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=(
-                "Prediction is not enabled on this prototype. Live AlphaGenome, "
-                "VEP, and gnomAD feature extraction must be configured and validated "
-                "before scores can be returned."
+                "Live prediction remains disabled until the deployment operator "
+                "has reviewed the applicable AlphaGenome API/model terms."
             ),
         )
 
-    raise HTTPException(
-        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-        detail=(
-            "Live prediction provider is not implemented yet. No predictions were "
-            "generated; this endpoint will be enabled only after feature parity tests."
-        ),
-    )
+    provider_ready, _reason = live_provider_status()
+    if not provider_ready:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "Live feature extraction is not configured. The AlphaGenome SDK, "
+                "ALPHAGENOME_API_KEY, and an indexed GRCh38 gnomAD VCF are required."
+            ),
+        )
+
+    try:
+        service = get_live_service(predictor)
+        return service.predict(request.variants)
+    except HTTPException:
+        raise
+    except RuntimeError as exc:
+        # Configuration failures are returned as actionable, non-secret messages.
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=str(exc),
+        ) from exc
+    except Exception as exc:
+        logging.exception("AGVarPred live prediction failed")
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=(
+                "Feature extraction or prediction failed. No reliable score "
+                "was returned for this request; check provider availability and logs."
+            ),
+        ) from exc
