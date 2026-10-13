@@ -151,7 +151,7 @@ def predict(request: PredictRequest) -> dict:
     if not env_enabled("AGVARPRED_ENABLE_LIVE_PREDICTION"):
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Live prediction is disabled by the deployment configuration.",
+            detail="Live prediction is not enabled in the deployment configuration.",
         )
 
     if not env_enabled("AGVARPRED_ALPHA_TERMS_REVIEWED"):
@@ -163,7 +163,9 @@ def predict(request: PredictRequest) -> dict:
             ),
         )
 
-    provider_ready, _reason = live_provider_status()
+    provider_ready, _reason = live_provider_status(
+        predictor.manifest.get("alphagenome_version")
+    )
     if not provider_ready:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
