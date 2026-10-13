@@ -11,6 +11,7 @@ from functools import lru_cache
 from typing import Annotated, Literal
 
 from fastapi import FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from AGVarPred import AGVarPredPredictor
@@ -115,7 +116,7 @@ def health() -> HealthResponse:
         model_type=predictor.model_type,
         feature_count=predictor.n_features,
         threshold=predictor.threshold,
-        live_prediction_enabled=live_enabled,
+        live_prediction_enabled=live_enabled and provider_ready,
         live_provider_ready=provider_ready,
     )
 
