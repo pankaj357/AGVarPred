@@ -60,11 +60,15 @@ class AGVarPredPredictor:
         self.selected_features = list(self.pipeline.get("features", self.feature_selector.selected_features))
         self.model_type = self.manifest.get("model_type", "unknown")
 
-        # Sanity check: feature list in pipeline vs manifest should match
-        if set(self.selected_features) != set(self.feature_selector.selected_features):
+        # The pipeline's feature order is authoritative because the scaler and
+        # estimator were fitted against that exact column order. Comparing sets
+        # alone is insufficient: a permutation can silently feed each value to
+        # the wrong scaler parameters while retaining the expected feature count.
+        if self.selected_features != self.feature_selector.selected_features:
             warnings.warn(
-                "Feature list in pipeline differs from manifest feature list. "
-                "Using the pipeline's feature list."
+                "Feature list order or content in the model pipeline differs from "
+                "selected_features.txt. Using the pipeline's exact feature order.",
+                UserWarning,
             )
             self.feature_selector = FeatureSelector(self.selected_features)
 
