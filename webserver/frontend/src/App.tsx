@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowDownRight,
   ArrowRight,
@@ -14,7 +14,6 @@ import {
   Sparkles,
   Trash2,
   TriangleAlert,
-  Upload,
   X,
 } from "lucide-react";
 
@@ -40,7 +39,7 @@ function App() {
   const [health, setHealth] = useState<Health | null>(null);
   const [apiUnavailable, setApiUnavailable] = useState(false);
 
-  useMemo(() => {
+  useEffect(() => {
     let active = true;
     fetch(`${API_BASE}/api/health`)
       .then(async (response) => {
