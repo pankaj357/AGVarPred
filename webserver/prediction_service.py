@@ -35,6 +35,34 @@ def env_enabled(name: str) -> bool:
     return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "on"}
 
 
+def alpha_feature_names(selected_features: list[str]) -> list[str]:
+    """Return frozen-model AlphaGenome features, excluding VEP/AF features."""
+    return [
+        name
+        for name in selected_features
+        if not name.startswith("vep_") and name not in ANNOTATION_ONLY_FEATURES
+    ]
+
+
+def has_vep_consequence_annotation(features: pd.DataFrame, variant_id: str) -> bool:
+    """Whether a variant has a usable consequence annotation from the configured VEP source."""
+    if variant_id not in features.index or "vep_Consequence" not in features.columns:
+        return False
+    value = features.at[variant_id, "vep_Consequence"]
+    return isinstance(value, str) and bool(value.strip())
+
+
+def missing_model_feature_columns(
+    features: pd.DataFrame, selected_features: list[str]
+) -> list[str]:
+    """List missing required model columns; unseen consequence dummies may be zero-filled."""
+    return [
+        name
+        for name in selected_features
+        if name not in features.columns and not name.startswith("vep_Consequence_")
+    ]
+
+
 def live_provider_status(
     expected_alphagenome_version: str | None = None,
 ) -> tuple[bool, str]:
@@ -132,32 +160,73 @@ class LivePredictionService:
         variants_df = pd.DataFrame(rows)
         features = self.feature_generator.from_variants(variants_df)
 
-        selected = self.predictor.selected_features
-        alpha_features = [
-            name
-            for name in selected
-            if not name.startswith("vep_") and name not in ANNOTATION_ONLY_FEATURES
-        ]
+        selected = list(self.predictor.selected_features)
+        alpha_features = alpha_feature_names(selected)
         if not alpha_features:
             raise RuntimeError("The frozen model's AlphaGenome feature schema is unavailable.")
 
-        # A VEP consequence one-hot column absent from this particular batch
-        # means that category was not observed, so it should be zero rather than
-        # an imputed value. Do not zero-fill missing AlphaGenome tracks.
+        # Never let the frozen model's imputer hide a naming/version mismatch
+        # in the live AlphaGenome SDK. Every selected track must be present.
+        missing_alpha = [name for name in alpha_features if name not in features.columns]
+        if missing_alpha:
+            examples = ", ".join(missing_alpha[:8])
+            more = " ..." if len(missing_alpha) > 8 else ""
+            raise RuntimeError(
+                "AlphaGenome feature-schema mismatch: "
+                f"{len(missing_alpha)} selected model tracks are absent "
+                f"(e.g. {examples}{more}). No predictions were generated."
+            )
+
+        # An absent one-hot consequence category means no variant in this batch
+        # has that category, so its column can be zero. Other missing selected
+        # features are not silently imputed if any VEP annotation was returned.
+        vep_required = any(name.startswith("vep_") for name in selected)
+        vep_available = {
+            variant_id: has_vep_consequence_annotation(features, variant_id)
+            for variant_id in original_by_id
+        }
+        any_vep_available = any(vep_available.values())
         for name in selected:
             if name.startswith("vep_Consequence_") and name not in features.columns:
                 features[name] = 0
 
+        missing_required = missing_model_feature_columns(features, selected)
+        if not any_vep_available:
+            # No annotations can be scored; report per-variant VEP failures below
+            # instead of misclassifying the absent VEP columns as a global error.
+            missing_required = [
+                name for name in missing_required if not name.startswith("vep_")
+            ]
+        if missing_required:
+            examples = ", ".join(missing_required[:8])
+            more = " ..." if len(missing_required) > 8 else ""
+            raise RuntimeError(
+                "Frozen-model feature-schema mismatch: "
+                f"{len(missing_required)} required columns are absent "
+                f"(e.g. {examples}{more}). No predictions were generated."
+            )
+
         successful_ids: list[str] = []
         row_errors: dict[str, str] = {}
-        available_alpha = [name for name in alpha_features if name in features.columns]
         for variant_id in original_by_id:
-            if variant_id not in features.index or not available_alpha:
+            if variant_id not in features.index:
                 row_errors[variant_id] = (
                     "No usable AlphaGenome scores were returned for this variant."
                 )
                 continue
-            row = features.loc[variant_id, available_alpha]
+
+            # The model was trained with the release-matched VEP features found
+            # in the configured gnomAD VCF. Do not let missing annotations turn
+            # into imputed values or false zero-valued consequence indicators.
+            if vep_required and not vep_available.get(variant_id, False):
+                row_errors[variant_id] = (
+                    "No usable VEP consequence annotation was found for this exact "
+                    "variant in the configured gnomAD VCF. This variant was not "
+                    "scored because missing VEP features must not be silently imputed."
+                )
+                continue
+
+            row = features.loc[variant_id, alpha_features]
             if not row.notna().any():
                 row_errors[variant_id] = (
                     "No usable AlphaGenome scores were returned for this variant."
