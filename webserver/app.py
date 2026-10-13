@@ -124,7 +124,7 @@ def get_frozen_predictor() -> AGVarPredPredictor:
 def health() -> HealthResponse:
     """Return service and frozen-model metadata without exposing secrets."""
     predictor = get_frozen_predictor()
-    provider_ready, _ = live_provider_status()
+    provider_ready, _ = live_provider_status(\n        predictor.manifest.get("alphagenome_version")\n    )
     live_enabled = (
         env_enabled("AGVARPRED_ENABLE_LIVE_PREDICTION")
         and env_enabled("AGVARPRED_ALPHA_TERMS_REVIEWED")
