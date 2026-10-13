@@ -59,3 +59,24 @@ def test_predict_rejects_symbolic_alleles():
         },
     )
     assert response.status_code == 422
+
+def test_predict_rejects_identical_ref_alt():
+    response = client.post(
+        "/api/predict",
+        json={
+            "genome_build": "GRCh38",
+            "variants": [{"chrom": "chr1", "pos": 12345, "ref": "A", "alt": "A"}],
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_predict_rejects_invalid_chromosome():
+    response = client.post(
+        "/api/predict",
+        json={
+            "genome_build": "GRCh38",
+            "variants": [{"chrom": "chr23", "pos": 12345, "ref": "A", "alt": "G"}],
+        },
+    )
+    assert response.status_code == 422
