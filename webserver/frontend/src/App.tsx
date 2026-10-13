@@ -28,6 +28,28 @@ type Health = {
   live_provider_ready: boolean;
 };
 type ApiError = { detail?: string };
+type PredictionResult = {
+  variant_id: string;
+  chrom: string;
+  pos: number;
+  ref: string;
+  alt: string;
+  gene?: string | null;
+  status: "ok" | "error";
+  score?: number;
+  predicted_class?: string;
+  threshold?: number;
+  gnomAD_AF?: number | null;
+  consequence?: string | null;
+  error?: string;
+};
+type PredictResponse = ApiError & {
+  results?: PredictionResult[];
+  requested_variants?: number;
+  scored_variants?: number;
+  model_version?: string;
+  notice?: string;
+};
 
 const emptyVariant = (): Variant => ({ chrom: "chr", pos: "", ref: "", alt: "", gene: "" });
 const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "");
@@ -37,6 +59,8 @@ function App() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<{ type: "error" | "info"; message: string } | null>(null);
   const [health, setHealth] = useState<Health | null>(null);
+  const [results, setResults] = useState<PredictionResult[]>([]);
+  const [resultMeta, setResultMeta] = useState<{ model_version?: string; notice?: string } | null>(null);
   const [apiUnavailable, setApiUnavailable] = useState(false);
 
   useEffect(() => {
@@ -80,6 +104,8 @@ function App() {
     }
     setBusy(true);
     setNotice(null);
+    setResults([]);
+    setResultMeta(null);
     try {
       const response = await fetch(`${API_BASE}/api/predict`, {
         method: "POST",
@@ -95,9 +121,14 @@ function App() {
           })),
         }),
       });
-      const payload = (await response.json()) as ApiError & { results?: unknown[] };
+      const payload = (await response.json()) as PredictResponse;
       if (!response.ok) throw new Error(payload.detail ?? `Request failed (${response.status}).`);
-      setNotice({ type: "info", message: "Prediction response received. Results rendering will be added with the validated live-provider integration." });
+      setResults(payload.results ?? []);
+      setResultMeta({ model_version: payload.model_version, notice: payload.notice });
+      setNotice({
+        type: "info",
+        message: `${payload.scored_variants ?? 0} of ${payload.requested_variants ?? variants.length} variants scored.`,
+      });
     } catch (error) {
       setNotice({
         type: "error",
@@ -220,6 +251,50 @@ function App() {
                 API {health.status} · {health.model_version} · {health.live_provider_ready ? "prediction provider ready" : "live provider not configured"}
               </div>
             )}
+
+            {results.length > 0 && (
+              <div className="mt-7 overflow-hidden rounded-2xl border border-white/10">
+                <div className="flex flex-col justify-between gap-3 border-b border-white/10 bg-white/[0.025] p-4 sm:flex-row sm:items-center">
+                  <div>
+                    <h3 className="font-semibold text-white">Analysis results</h3>
+                    <p className="mt-1 text-xs text-emerald-50/45">
+                      {resultMeta?.model_version ?? "AGVarPred"} · Research use only
+                    </p>
+                  </div>
+                  <button type="button" onClick={() => downloadCsv(results)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-emerald-50/70 transition hover:border-mint/40 hover:text-mint">
+                    <FileUp size={14} /> Download CSV
+                  </button>
+                </div>
+                <div className="max-h-[420px] overflow-auto">
+                  <table className="w-full min-w-[800px] border-collapse text-left text-xs">
+                    <thead className="sticky top-0 bg-[#153331] text-emerald-50/50">
+                      <tr>
+                        {["Variant", "Gene", "AGVarPred score", "Threshold class", "gnomAD AF", "Consequence / status"].map((label) => (
+                          <th key={label} className="px-4 py-3 font-medium">{label}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {results.map((result) => (
+                        <tr key={result.variant_id} className="border-t border-white/[0.07]">
+                          <td className="px-4 py-3 font-mono text-emerald-50/75">{result.variant_id}</td>
+                          <td className="px-4 py-3 text-emerald-50/60">{result.gene || "—"}</td>
+                          <td className="px-4 py-3 font-semibold text-white">{result.status === "ok" && typeof result.score === "number" ? result.score.toFixed(4) : "—"}</td>
+                          <td className="px-4 py-3">
+                            {result.status === "ok" ? (
+                              <span className={`rounded-full px-2 py-1 ${result.predicted_class === "Pathogenic" ? "bg-amber-200/10 text-amber-100" : "bg-aqua/10 text-aqua"}`}>{result.predicted_class}</span>
+                            ) : <span className="text-amber-200">Not scored</span>}
+                          </td>
+                          <td className="px-4 py-3 font-mono text-emerald-50/60">{typeof result.gnomAD_AF === "number" ? result.gnomAD_AF.toExponential(2) : "—"}</td>
+                          <td className="max-w-xs px-4 py-3 text-emerald-50/55">{result.status === "error" ? result.error : result.consequence || "Annotation unavailable"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {resultMeta?.notice && <p className="border-t border-white/10 px-4 py-3 text-xs leading-5 text-emerald-50/45">{resultMeta.notice}</p>}
+              </div>
+            )}
           </section>
         </section>
 
@@ -251,6 +326,28 @@ function App() {
       </main>
     </div>
   );
+}
+
+function downloadCsv(results: PredictionResult[]) {
+  const columns: (keyof PredictionResult)[] = [
+    "variant_id", "chrom", "pos", "ref", "alt", "gene", "status",
+    "score", "predicted_class", "threshold", "gnomAD_AF", "consequence", "error",
+  ];
+  const escapeCell = (value: unknown) => {
+    const text = value === null || value === undefined ? "" : String(value);
+    return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  };
+  const csv = [
+    columns.join(","),
+    ...results.map((row) => columns.map((column) => escapeCell(row[column])).join(",")),
+  ].join("\r\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "agvarpred_results.csv";
+  link.click();
+  URL.revokeObjectURL(url);
 }
 
 function Field({
