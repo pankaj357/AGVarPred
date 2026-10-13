@@ -24,6 +24,17 @@ uvicorn webserver.app:app --reload
 
 Open http://127.0.0.1:8000/docs to inspect the API.
 
+In a second terminal, start the React interface:
+
+```bash
+cd webserver/frontend
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+Open http://127.0.0.1:5173. The form currently validates and submits inputs to the API; the backend intentionally returns a clear `503` response until the live feature-provider adapter is implemented and verified.
+
 ## Initial API
 
 - `GET /api/health`: service status and model artifact metadata (no secret values).
