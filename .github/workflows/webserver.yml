@@ -23,6 +23,8 @@ jobs:
           pip install -r webserver/requirements.txt
       - name: Test webserver validation and model metadata
         run: pytest webserver/tests/ -v
+      - name: Run existing AGVarPred regression suite
+        run: pytest tests/ -v
 
   frontend-build:
     runs-on: ubuntu-latest
