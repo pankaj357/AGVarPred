@@ -1,10 +1,11 @@
 """Tests for live AGVarPred feature-schema and annotation guards."""
 
+import numpy as np
 import pandas as pd
 
 from webserver.prediction_service import (
     alpha_feature_names,
-    has_vep_consequence_annotation,
+    apply_training_missing_annotation_defaults,
     missing_model_feature_columns,
 )
 
@@ -28,22 +29,68 @@ def test_missing_alpha_feature_column_is_reported():
     assert missing_model_feature_columns(features, selected) == ["SPLICE_track_2"]
 
 
-def test_absent_consequence_one_hot_column_can_be_zero_filled():
-    features = pd.DataFrame({"vep_Consequence": ["missense_variant"]})
-    selected = ["vep_Consequence_intron_variant"]
+def test_training_vEP_defaults_are_applied_when_entire_batch_lacks_vEP():
+    selected = [
+        "vep_IMPACT_score",
+        "vep_LoF",
+        "vep_PolyPhen_score",
+        "vep_SIFT_score",
+        "vep_is_synonymous",
+        "vep_Consequence_synonymous_variant",
+    ]
+    features = pd.DataFrame({"ATAC_track_1": [0.2]}, index=["chr1_10_A_G"])
 
-    assert missing_model_feature_columns(features, selected) == []
+    result = apply_training_missing_annotation_defaults(features, selected)
+    row = result.loc["chr1_10_A_G"]
+
+    assert row["vep_IMPACT_score"] == 0
+    assert row["vep_LoF"] == -1
+    assert np.isnan(row["vep_PolyPhen_score"])
+    assert np.isnan(row["vep_SIFT_score"])
+    assert row["vep_is_synonymous"] == 0
+    assert row["vep_Consequence_synonymous_variant"] == 0
+    assert missing_model_feature_columns(result, selected) == []
 
 
-def test_vep_guard_requires_a_nonempty_raw_consequence():
-    features = pd.DataFrame(
+def test_missing_vep_row_has_same_defaults_in_mixed_batch_and_alone():
+    selected = [
+        "vep_IMPACT_score",
+        "vep_LoF",
+        "vep_PolyPhen_score",
+        "vep_SIFT_score",
+        "vep_is_synonymous",
+        "vep_Consequence_synonymous_variant",
+    ]
+    mixed = pd.DataFrame(
         {
-            "vep_Consequence": ["missense_variant", None, ""],
+            "vep_IMPACT_score": [4, np.nan],
+            "vep_LoF": [1, np.nan],
+            "vep_PolyPhen_score": [0.01, np.nan],
+            "vep_SIFT_score": [0.02, np.nan],
+            "vep_is_synonymous": [0, np.nan],
+            "vep_Consequence_synonymous_variant": [1, np.nan],
         },
-        index=["annotated", "missing", "empty"],
+        index=["annotated", "missing"],
     )
 
-    assert has_vep_consequence_annotation(features, "annotated")
-    assert not has_vep_consequence_annotation(features, "missing")
-    assert not has_vep_consequence_annotation(features, "empty")
-    assert not has_vep_consequence_annotation(features, "not_in_matrix")
+    result = apply_training_missing_annotation_defaults(mixed, selected)
+    row = result.loc["missing"]
+
+    assert row["vep_IMPACT_score"] == 0
+    assert row["vep_LoF"] == -1
+    assert np.isnan(row["vep_PolyPhen_score"])
+    assert np.isnan(row["vep_SIFT_score"])
+    assert row["vep_is_synonymous"] == 0
+    assert row["vep_Consequence_synonymous_variant"] == 0
+
+
+def test_unknown_vep_feature_missing_rule_fails_closed():
+    features = pd.DataFrame(index=["variant"])
+    selected = ["vep_new_unverified_feature"]
+
+    try:
+        apply_training_missing_annotation_defaults(features, selected)
+    except RuntimeError as exc:
+        assert "No training-compatible missing-value rule" in str(exc)
+    else:
+        raise AssertionError("An unknown VEP feature must not receive a guessed default")

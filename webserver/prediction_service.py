@@ -44,24 +44,58 @@ def alpha_feature_names(selected_features: list[str]) -> list[str]:
     ]
 
 
-def has_vep_consequence_annotation(features: pd.DataFrame, variant_id: str) -> bool:
-    """Whether a variant has a usable consequence annotation from the configured VEP source."""
-    if variant_id not in features.index or "vep_Consequence" not in features.columns:
-        return False
-    value = features.at[variant_id, "vep_Consequence"]
-    return isinstance(value, str) and bool(value.strip())
+def apply_training_missing_annotation_defaults(
+    features: pd.DataFrame, selected_features: list[str]
+) -> pd.DataFrame:
+    """Apply the same VEP-missing defaults used when preparing training data.
+
+    Missing gnomAD VEP annotations are a supported input pattern in the training
+    pipeline. Keep those values batch-independent instead of letting an entirely
+    unannotated batch turn selected VEP columns into median-imputed values.
+    Numeric SIFT/PolyPhen scores remain NaN and are imputed by the frozen model.
+    """
+    features = features.copy()
+    ordinal_missing = {"vep_LoF", "vep_SIFT_pred", "vep_PolyPhen_pred", "vep_IMPACT"}
+    numeric_missing = {"vep_SIFT_score", "vep_PolyPhen_score", "vep_Protein_position"}
+
+    for name in selected_features:
+        if not name.startswith("vep_"):
+            continue
+
+        if name.startswith("vep_Consequence_"):
+            if name not in features.columns:
+                features[name] = 0
+            else:
+                features[name] = features[name].fillna(0)
+        elif name == "vep_IMPACT_score" or name.startswith("vep_is_") or name.startswith("vep_has_"):
+            if name not in features.columns:
+                features[name] = 0
+            else:
+                features[name] = features[name].fillna(0)
+        elif name in ordinal_missing:
+            if name not in features.columns:
+                features[name] = -1
+            else:
+                features[name] = pd.to_numeric(features[name], errors="coerce").fillna(-1)
+        elif name in numeric_missing:
+            if name not in features.columns:
+                features[name] = float("nan")
+            else:
+                features[name] = pd.to_numeric(features[name], errors="coerce")
+        else:
+            raise RuntimeError(
+                "No training-compatible missing-value rule is defined for selected "
+                f"VEP feature {name!r}; refusing to score."
+            )
+
+    return features
 
 
 def missing_model_feature_columns(
     features: pd.DataFrame, selected_features: list[str]
 ) -> list[str]:
-    """List missing required model columns; unseen consequence dummies may be zero-filled."""
-    return [
-        name
-        for name in selected_features
-        if name not in features.columns and not name.startswith("vep_Consequence_")
-    ]
-
+    """List required selected columns that are absent after normalization."""
+    return [name for name in selected_features if name not in features.columns]
 
 def live_provider_status(
     expected_alphagenome_version: str | None = None,
@@ -177,26 +211,11 @@ class LivePredictionService:
                 f"(e.g. {examples}{more}). No predictions were generated."
             )
 
-        # An absent one-hot consequence category means no variant in this batch
-        # has that category, so its column can be zero. Other missing selected
-        # features are not silently imputed if any VEP annotation was returned.
-        vep_required = any(name.startswith("vep_") for name in selected)
-        vep_available = {
-            variant_id: has_vep_consequence_annotation(features, variant_id)
-            for variant_id in original_by_id
-        }
-        any_vep_available = any(vep_available.values())
-        for name in selected:
-            if name.startswith("vep_Consequence_") and name not in features.columns:
-                features[name] = 0
-
+        # Training permits absent gnomAD/VEP annotations. Apply its exact missing
+        # value policy to selected VEP inputs so the result does not depend on
+        # whether this request contains another variant with a VEP record.
+        features = apply_training_missing_annotation_defaults(features, selected)
         missing_required = missing_model_feature_columns(features, selected)
-        if not any_vep_available:
-            # No annotations can be scored; report per-variant VEP failures below
-            # instead of misclassifying the absent VEP columns as a global error.
-            missing_required = [
-                name for name in missing_required if not name.startswith("vep_")
-            ]
         if missing_required:
             examples = ", ".join(missing_required[:8])
             more = " ..." if len(missing_required) > 8 else ""
@@ -212,17 +231,6 @@ class LivePredictionService:
             if variant_id not in features.index:
                 row_errors[variant_id] = (
                     "No usable AlphaGenome scores were returned for this variant."
-                )
-                continue
-
-            # The model was trained with the release-matched VEP features found
-            # in the configured gnomAD VCF. Do not let missing annotations turn
-            # into imputed values or false zero-valued consequence indicators.
-            if vep_required and not vep_available.get(variant_id, False):
-                row_errors[variant_id] = (
-                    "No usable VEP consequence annotation was found for this exact "
-                    "variant in the configured gnomAD VCF. This variant was not "
-                    "scored because missing VEP features must not be silently imputed."
                 )
                 continue
 
