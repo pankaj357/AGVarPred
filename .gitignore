@@ -139,3 +139,11 @@ Thumbs.db
 !variant_type_analysis/*.pdf
 !tissue_shap_analysis/*.png
 !tissue_shap_analysis/*.pdf
+
+
+# AGVarPred webserver frontend build artifacts
+webserver/frontend/node_modules/
+webserver/frontend/dist/
+webserver/frontend/.env.local
+
+webserver/.env

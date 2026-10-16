@@ -1,0 +1,1 @@
+"""AGVarPred webserver prototype package."""
