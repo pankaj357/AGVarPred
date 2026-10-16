@@ -170,7 +170,7 @@ GitHub repository.
 - **Concept DOI** (always resolves to the latest version):  
   <https://doi.org/10.5281/zenodo.20955782>
 - **Version DOI for v1.0.9**:  
-  *(to be added after Zenodo publication)*
+  <https://doi.org/10.5281/zenodo.21997464>
 
 ```text
 Kumar, P., & Kanaka, K. K. (2026). AGVarPred: germline variant pathogenicity
