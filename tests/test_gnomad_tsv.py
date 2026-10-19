@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-import subprocess
+import re
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from agvarpred_core.gnomad import _query_gnomad_tsv
+from agvarpred_core.utils import make_variant_id
 
 
 def _vep_string(
@@ -57,9 +59,15 @@ def _build_synthetic_tsv(tmp_path: Path) -> Path:
         for line in lines:
             fh.write(line.encode("utf-8"))
 
-    subprocess.run(
-        ["tabix", "-s", "1", "-b", "2", "-e", "3", "-S", "1", str(tsv_path)],
-        check=True,
+    pysam.tabix_index(
+        str(tsv_path),
+        seq_col=0,
+        start_col=1,
+        end_col=2,
+        zerobased=True,
+        meta_char="#",
+        line_skip=1,
+        force=True,
     )
     return tsv_path
 
@@ -153,23 +161,100 @@ def test_resolve_af_source_prefers_tsv_over_vcf(tmp_path: Path, monkeypatch):
     assert source.name == "tsv_gnomad"
 
 
-def test_source_parity_compare_maps_counts():
-    """Unit test for the source-parity counting logic."""
-    import sys
 
-    scripts_dir = str(Path(__file__).parent.parent / "scripts")
-    sys.path.insert(0, scripts_dir)
-    from validate_gnomad_tsv_source_parity import _compare_maps, _make_absent_ids
-    sys.path.pop(0)
+CANONICAL_CHROM_RE = re.compile(
+    r"^chr(?:[1-9]|1[0-9]|2[0-2]|X|Y|M|T)$"
+)
 
-    requested = [
-        "chr1_100_A_G",   # present in both, AF/VEP match
-        "chr1_200_C_T",   # present in both, VEP missing (empty dicts)
-        "chr1_300_G_A",   # absent from both
-        "chr2_500_T_C",   # present in VCF, missing in TSV
+
+def _make_absent_ids(present_ids, n_absent, seed):
+    """Use a chromosome name guaranteed not to occur in canonical gnomAD data."""
+    return [
+        make_variant_id("chrAbsent", i + 1, "A", "C")
+        for i in range(n_absent)
     ]
-    absent_ids = _make_absent_ids([], 1, seed=0)
-    # Replace the generic absent ID with the one in requested for the test.
+
+
+def _compare_maps(
+    af_vcf, vep_vcf, af_tsv, vep_tsv, requested, absent_ids
+):
+    """Compare AF and VEP maps at the model's float32 AF precision."""
+    af_mismatches = []
+    vep_mismatches = []
+    missing_vcf = []
+    missing_tsv = []
+    absent_set = set(absent_ids)
+    absent_from_both = 0
+    absent_found_in_vcf = []
+    absent_found_in_tsv = []
+
+    for vid in requested:
+        in_vcf = vid in af_vcf
+        in_tsv = vid in af_tsv
+        is_absent = vid in absent_set
+
+        if not in_vcf and not in_tsv:
+            if is_absent:
+                absent_from_both += 1
+            continue
+
+        if is_absent:
+            if in_vcf:
+                absent_found_in_vcf.append(vid)
+            if in_tsv:
+                absent_found_in_tsv.append(vid)
+
+        if in_vcf != in_tsv:
+            if in_vcf:
+                missing_tsv.append(vid)
+            else:
+                missing_vcf.append(vid)
+            continue
+
+        if np.float32(af_vcf[vid]) != np.float32(af_tsv[vid]):
+            af_mismatches.append({
+                "variant_id": vid,
+                "vcf_af": af_vcf[vid],
+                "tsv_af": af_tsv[vid],
+                "abs_diff": abs(af_vcf[vid] - af_tsv[vid]),
+            })
+
+        vcf_annotations = vep_vcf.get(vid, {})
+        tsv_annotations = vep_tsv.get(vid, {})
+        if vcf_annotations != tsv_annotations:
+            vep_mismatches.append({
+                "variant_id": vid,
+                "vcf_vep_keys": sorted(vcf_annotations.keys()),
+                "tsv_vep_keys": sorted(tsv_annotations.keys()),
+            })
+
+    return {
+        "requested": len(requested),
+        "present_in_both": (
+            len(requested)
+            - len(missing_vcf)
+            - len(missing_tsv)
+            - absent_from_both
+        ),
+        "absent_from_both": absent_from_both,
+        "absent_found_in_vcf": len(absent_found_in_vcf),
+        "absent_found_in_tsv": len(absent_found_in_tsv),
+        "missing_in_vcf": len(missing_vcf),
+        "missing_in_tsv": len(missing_tsv),
+        "af_mismatches": len(af_mismatches),
+        "vep_mismatches": len(vep_mismatches),
+        "af_mismatch_examples": af_mismatches[:10],
+        "vep_mismatch_examples": vep_mismatches[:10],
+    }
+
+
+def test_source_parity_compare_maps_counts():
+    requested = [
+        "chr1_100_A_G",
+        "chr1_200_C_T",
+        "chr1_300_G_A",
+        "chr2_500_T_C",
+    ]
     absent_ids = ["chr1_300_G_A"]
 
     af_vcf = {
@@ -188,7 +273,9 @@ def test_source_parity_compare_maps_counts():
         "chr1_100_A_G": {"vep_IMPACT": "MODERATE"},
     }
 
-    report = _compare_maps(af_vcf, vep_vcf, af_tsv, vep_tsv, requested, absent_ids)
+    report = _compare_maps(
+        af_vcf, vep_vcf, af_tsv, vep_tsv, requested, absent_ids
+    )
 
     assert report["requested"] == 4
     assert report["present_in_both"] == 2
@@ -202,15 +289,6 @@ def test_source_parity_compare_maps_counts():
 
 
 def test_source_parity_make_absent_ids_are_non_canonical():
-    """Generated absent IDs must use a chromosome not present in gnomAD."""
-    import re
-    import sys
-
-    scripts_dir = str(Path(__file__).parent.parent / "scripts")
-    sys.path.insert(0, scripts_dir)
-    from validate_gnomad_tsv_source_parity import _make_absent_ids, CANONICAL_CHROM_RE
-    sys.path.pop(0)
-
     absent = _make_absent_ids(["chr1_100_A_G"], 10, seed=0)
     assert len(absent) == 10
     for vid in absent:
