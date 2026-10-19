@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import {
   ArrowDownRight,
@@ -286,6 +287,17 @@ function App() {
 
             {results.length > 0 && (
               <div className="mt-7 overflow-hidden rounded-2xl border border-white/10">
+                <div className="border-b border-white/10 bg-amber-100/[0.06] p-4">
+                  <div className="flex items-start gap-3">
+                    <TriangleAlert size={18} className="mt-0.5 shrink-0 text-amber-200/90" />
+                    <div>
+                      <h4 className="text-sm font-semibold text-amber-50">Research use only — not for clinical diagnosis or treatment</h4>
+                      <p className="mt-1 text-xs leading-5 text-amber-50/65">
+                        These scores are produced by a frozen research prototype and are calibrated to the ClinVar prevalence used during model development. They may not transfer to populations or diseases with different prevalence. Do not interpret them as a diagnosis, prognosis, or treatment recommendation.
+                      </p>
+                    </div>
+                  </div>
+                </div>
                 <div className="flex flex-col justify-between gap-3 border-b border-white/10 bg-white/[0.025] p-4 sm:flex-row sm:items-center">
                   <div>
                     <h3 className="font-semibold text-white">Analysis results</h3>
@@ -342,7 +354,7 @@ function App() {
             <div>
               <h3 className="text-sm font-semibold text-amber-50">Research prototype — not for clinical decisions</h3>
               <p className="mt-1 max-w-3xl text-sm leading-6 text-amber-50/55">
-                Predictions are not a clinical diagnosis. The operating threshold is empirical, and predicted scores should not be interpreted as absolute clinical probabilities when benchmark prevalence differs from the ClinVar calibration set.
+                Predictions are not a clinical diagnosis, prognosis, or treatment recommendation. The operating threshold is empirical, scores are calibrated to the ClinVar prevalence used during model development, and live AlphaGenome-derived features may differ from the historical training snapshot. Do not use these results for patient care without independent expert review.
               </p>
             </div>
           </div>
@@ -353,7 +365,6 @@ function App() {
 
         <footer className="mt-10 flex flex-col justify-between gap-3 border-t border-white/10 pt-6 text-xs text-emerald-50/35 sm:flex-row sm:items-center">
           <span>AGVarPred · Open research software prototype</span>
-          <span className="flex items-center gap-2">Feature provider pending verification <span className="h-1 w-1 rounded-full bg-emerald-50/25" /> Model pipeline preserved</span>
         </footer>
       </main>
     </div>
