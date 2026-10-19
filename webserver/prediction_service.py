@@ -202,17 +202,53 @@ class LivePredictionService:
         if not alpha_features:
             raise RuntimeError("The frozen model's AlphaGenome feature schema is unavailable.")
 
-        # Never let the frozen model's imputer hide a naming/version mismatch
-        # in the live AlphaGenome SDK. Every selected track must be present.
-        missing_alpha = [name for name in alpha_features if name not in features.columns]
-        if missing_alpha:
-            examples = ", ".join(missing_alpha[:8])
-            more = " ..." if len(missing_alpha) > 8 else ""
+        splice_prefixes = (
+            "SPLICE_SITES_",
+            "SPLICE_SITE_USAGE_",
+            "SPLICE_JUNCTIONS_",
+        )
+        
+        missing_alpha = [
+            name for name in alpha_features
+            if name not in features.columns
+        ]
+        
+        blocking_missing = [
+            name for name in missing_alpha
+            if not name.startswith(splice_prefixes)
+        ]
+        
+        # If a splice modality has returned some columns but selected tracks
+        # are missing, treat this as a schema mismatch rather than hiding it.
+        for prefix in splice_prefixes:
+            missing_for_modality = [
+                name for name in missing_alpha
+                if name.startswith(prefix)
+            ]
+        
+            modality_present = any(
+                str(col).startswith(prefix)
+                for col in features.columns
+            )
+        
+            if modality_present:
+                blocking_missing.extend(missing_for_modality)
+        
+        if blocking_missing:
+            examples = ", ".join(blocking_missing[:8])
+            more = " ..." if len(blocking_missing) > 8 else ""
+        
             raise RuntimeError(
                 "AlphaGenome feature-schema mismatch: "
-                f"{len(missing_alpha)} selected model tracks are absent "
+                f"{len(blocking_missing)} selected tracks are absent "
                 f"(e.g. {examples}{more}). No predictions were generated."
             )
+        
+        # If an entire splice modality is absent, preserve its missingness.
+        # The frozen predictor's FeatureSelector fills missing selected columns
+        # with NaN, and the trained imputer handles them during inference.
+        for name in missing_alpha:
+            features[name] = float("nan")
 
         # Training permits absent gnomAD/VEP annotations. Apply its exact missing
         # value policy to selected VEP inputs so the result does not depend on
