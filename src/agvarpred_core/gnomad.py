@@ -203,3 +203,56 @@ def _query_gnomad_tabix(
                 vep_map[vid] = parse_vep(vep_m.group(1))
 
     return af_map, vep_map
+
+
+def _query_gnomad_tsv(
+    variant_ids: list[str],
+    tsv_path: str | Path,
+) -> tuple[dict[str, float], dict[str, dict[str, Any]]]:
+    """Query a tabix-indexed TSV containing AF and first-transcript VEP.
+
+    The TSV schema is ``#CHROM START END REF ALT AF VEP`` with 0-based
+    ``START`` and 1-based exclusive ``END``. It is expected to be
+    BGZF-compressed and indexed with ``tabix -s 1 -b 2 -e 3 -S 1``.
+    """
+    import pysam
+
+    tsv_path = Path(tsv_path)
+    if not tsv_path.exists():
+        raise FileNotFoundError(f"gnomAD TSV not found: {tsv_path}")
+
+    target = {vid: parse_variant_id(vid) for vid in variant_ids}
+    pos_index: dict[tuple[str, int], list[str]] = {}
+    for vid, (chrom, pos, _ref, _alt) in target.items():
+        norm_chrom = _normalize_chrom(chrom)
+        pos_index.setdefault((norm_chrom, pos), []).append(vid)
+
+    af_map: dict[str, float] = {}
+    vep_map: dict[str, dict[str, Any]] = {}
+
+    with pysam.TabixFile(str(tsv_path)) as tbx:
+        for (chrom, pos), vids in pos_index.items():
+            start = pos - 1
+            end = pos
+            try:
+                for line in tbx.fetch(chrom, start, end):
+                    cols = line.rstrip("\n").split("\t")
+                    if len(cols) < 7:
+                        continue
+                    _rec_chrom, rec_start, _rec_end, rec_ref, rec_alt, rec_af, rec_vep = cols
+                    rec_pos = int(rec_start) + 1
+                    if rec_pos != pos:
+                        continue
+                    rec_ref = rec_ref.upper()
+                    rec_alt = rec_alt.upper()
+                    for vid in vids:
+                        _, _, want_ref, want_alt = target[vid]
+                        if rec_ref == want_ref and rec_alt == want_alt:
+                            af_map[vid] = float(rec_af)
+                            if rec_vep and rec_vep != ".":
+                                vep_map[vid] = parse_vep(rec_vep)
+            except Exception:
+                # Unknown chromosome or missing interval.
+                continue
+
+    return af_map, vep_map

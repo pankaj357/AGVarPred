@@ -1,5 +1,7 @@
+import joblib
 import numpy as np
 import pandas as pd
+import pytest
 
 from AGVarPred import AGVarPredAutoPredictor, AGVarPredPredictor
 from agvarpred_core.af_source import NoAFSource
@@ -47,7 +49,9 @@ def test_predictor_empty_input(synthetic_model_dir):
     assert preds.empty
 
 
-def test_auto_predictor_selects_no_af_without_gnomad(synthetic_model_dir):
+def test_auto_predictor_selects_no_af_without_gnomad(synthetic_model_dir, monkeypatch):
+    """When no gnomAD source is available, auto-selection uses the no-AF model."""
+    monkeypatch.delenv("GNOMAD_VCF", raising=False)
     with np.errstate(invalid="ignore"):
         auto = AGVarPredAutoPredictor(
             model_dir=synthetic_model_dir,
@@ -97,3 +101,37 @@ def test_auto_predictor_selects_full_with_local_gnomad(synthetic_model_dir, tmp_
     assert auto.model_name == "model_full"
     assert auto.model_type == "full"
     assert auto.af_source_name == "local_gnomad"
+
+
+
+def test_predictor_uses_pipeline_feature_order_when_feature_file_is_permuted(
+    synthetic_model_dir,
+):
+    model_dir = synthetic_model_dir / "model_full"
+    features_path = model_dir / "selected_features.txt"
+    pipeline = joblib.load(model_dir / "final_pipeline.pkl")
+    pipeline_features = list(pipeline["features"])
+
+    # Same feature names, different order: set equality would miss this problem.
+    features_path.write_text("\n".join(reversed(pipeline_features)))
+
+    with pytest.warns(UserWarning, match="exact feature order"):
+        predictor = AGVarPredPredictor(
+            model_name="model_full", model_dir=synthetic_model_dir
+        )
+
+    assert predictor.selected_features == pipeline_features
+    assert predictor.feature_selector.selected_features == pipeline_features
+
+    frame = pd.DataFrame(
+        {
+            "feat_a": [0.5],
+            "feat_b": [0.1],
+            "gnomAD_AF": [0.0],
+            "vep_IMPACT_score": [3],
+        },
+        index=pd.Index(["v-order"], name="variant_id"),
+    )
+    output = predictor.predict(frame)
+    assert len(output) == 1
+    assert np.isfinite(output["probability"].iloc[0])

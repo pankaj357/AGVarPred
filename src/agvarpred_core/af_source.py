@@ -56,6 +56,28 @@ class LocalGnomADSource(AFSource):
         return query_gnomad_by_variants(variant_ids, self.vcf_path)
 
 
+class TabixTSVGnomADSource(AFSource):
+    """Query a tabix-indexed reduced TSV containing AF and first-transcript VEP."""
+
+    name = "tsv_gnomad"
+
+    def __init__(self, tsv_path: str | Path | None = None):
+        self.tsv_path = tsv_path or os.environ.get("GNOMAD_TSV")
+        self._available = self.tsv_path is not None and Path(self.tsv_path).is_file()
+
+    def is_available(self) -> bool:
+        return self._available
+
+    def query(
+        self, variant_ids: list[str]
+    ) -> tuple[dict[str, float], dict[str, dict[str, Any]]]:
+        if not self.is_available():
+            raise RuntimeError("Tabix TSV gnomAD source is not available")
+        from .gnomad import _query_gnomad_tsv
+
+        return _query_gnomad_tsv(variant_ids, self.tsv_path)
+
+
 class OnlineAFSource(AFSource):
     """Placeholder for a future online AF/VEP annotation provider.
 
@@ -100,15 +122,21 @@ class NoAFSource(AFSource):
 
 def resolve_af_source(
     gnomad_vcf: str | Path | None = None,
+    gnomad_tsv: str | Path | None = None,
     online_config: dict[str, Any] | None = None,
 ) -> AFSource:
     """Choose the best available AF/VEP provider.
 
     Priority:
-        1. Local gnomAD VCF (explicit path or GNOMAD_VCF env var)
-        2. Online provider (if enabled)
-        3. No-AF fallback
+        1. Tabix-indexed reduced TSV (explicit path or GNOMAD_TSV env var)
+        2. Local gnomAD VCF (explicit path or GNOMAD_VCF env var)
+        3. Online provider (if enabled)
+        4. No-AF fallback
     """
+    tsv = TabixTSVGnomADSource(gnomad_tsv)
+    if tsv.is_available():
+        return tsv
+
     local = LocalGnomADSource(gnomad_vcf)
     if local.is_available():
         return local
