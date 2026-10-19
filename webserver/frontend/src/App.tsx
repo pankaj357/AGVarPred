@@ -52,7 +52,10 @@ type PredictResponse = ApiError & {
 };
 
 const emptyVariant = (): Variant => ({ chrom: "chr", pos: "", ref: "", alt: "", gene: "" });
-const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "");
+const STATIC_PREVIEW = import.meta.env.VITE_STATIC_PREVIEW === "true";
+const API_BASE = STATIC_PREVIEW
+  ? ""
+  : (import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "");
 
 function App() {
   const [variants, setVariants] = useState<Variant[]>([{ ...emptyVariant(), chrom: "chr1" }]);
@@ -65,6 +68,21 @@ function App() {
 
   useEffect(() => {
     let active = true;
+    if (STATIC_PREVIEW) {
+      if (active) {
+        setHealth({
+          status: "ok",
+          model_version: "model_full",
+          model_type: "full",
+          feature_count: 120,
+          threshold: 0.42,
+          live_prediction_enabled: false,
+          live_provider_ready: false,
+        });
+        setApiUnavailable(true);
+      }
+      return;
+    }
     fetch(`${API_BASE}/api/health`)
       .then(async (response) => {
         if (!response.ok) throw new Error("API health endpoint returned an error.");
@@ -100,6 +118,10 @@ function App() {
     event.preventDefault();
     if (!canSubmit) {
       setNotice({ type: "error", message: "Check every row: use a GRCh38 chromosome, a positive 1-based position, and different A/C/G/T/N alleles." });
+      return;
+    }
+    if (STATIC_PREVIEW) {
+      setNotice({ type: "info", message: "Online predictions are not yet available in this static preview." });
       return;
     }
     setBusy(true);
@@ -199,6 +221,16 @@ function App() {
               <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-mint"><FileUp size={21} /></div>
             </div>
 
+            {STATIC_PREVIEW && (
+              <div className="mt-5 flex items-start gap-3 rounded-xl border border-amber-200/20 bg-amber-100/[0.06] p-4 text-sm leading-6 text-amber-100/80">
+                <TriangleAlert size={18} className="mt-0.5 shrink-0" />
+                <span>
+                  <strong>Static preview.</strong> Online predictions are not yet available from this GitHub Pages site.
+                  The form below demonstrates the interface; submissions are disabled until a backend is deployed.
+                </span>
+              </div>
+            )}
+
             <form className="mt-7 space-y-4" onSubmit={submit}>
               {variants.map((variant, index) => (
                 <div key={index} className="rounded-2xl border border-white/10 bg-ink/45 p-4">
@@ -224,9 +256,9 @@ function App() {
                 <button type="button" onClick={addVariant} disabled={variants.length >= 25} className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-emerald-50/65 transition hover:bg-white/5 hover:text-mint disabled:opacity-30">
                   <Plus size={15} /> Add another <span className="text-xs text-emerald-50/35">({variants.length}/25)</span>
                 </button>
-                <button type="submit" disabled={busy} className="inline-flex min-w-40 items-center justify-center gap-2 rounded-xl bg-mint px-5 py-3 text-sm font-semibold text-ink transition hover:bg-[#b8f0d5] disabled:cursor-not-allowed disabled:opacity-70">
+                <button type="submit" disabled={busy || STATIC_PREVIEW} className="inline-flex min-w-40 items-center justify-center gap-2 rounded-xl bg-mint px-5 py-3 text-sm font-semibold text-ink transition hover:bg-[#b8f0d5] disabled:cursor-not-allowed disabled:opacity-70">
                   {busy ? <LoaderCircle size={16} className="animate-spin" /> : <ArrowDownRight size={16} />}
-                  {busy ? "Submitting…" : "Analyse variants"}
+                  {STATIC_PREVIEW ? "Preview only" : busy ? "Submitting…" : "Analyse variants"}
                 </button>
               </div>
             </form>
