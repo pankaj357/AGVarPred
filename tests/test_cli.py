@@ -47,7 +47,9 @@ def _make_minimal_vcf_alpha(tmp_path, gene="GENE1"):
     return vcf_path, alpha_dir
 
 
-def test_cli_predict_auto_no_af_fallback(tmp_path, synthetic_model_dir):
+def test_cli_predict_auto_no_af_fallback(tmp_path, synthetic_model_dir, monkeypatch):
+    """Auto mode falls back to no-AF when no gnomAD source is configured."""
+    monkeypatch.delenv("GNOMAD_VCF", raising=False)
     vcf_path, alpha_dir = _make_minimal_vcf_alpha(tmp_path)
     out_path = tmp_path / "pred.csv"
 
@@ -72,8 +74,9 @@ def test_cli_predict_auto_no_af_fallback(tmp_path, synthetic_model_dir):
     assert preds["af_source"].iloc[0] == "none"
 
 
-def test_cli_predict_force_full_without_af(tmp_path, synthetic_model_dir):
+def test_cli_predict_force_full_without_af(tmp_path, synthetic_model_dir, monkeypatch):
     """Advanced users can force the full model even without AF; metadata records af_source=none."""
+    monkeypatch.delenv("GNOMAD_VCF", raising=False)
     vcf_path, alpha_dir = _make_minimal_vcf_alpha(tmp_path)
     out_path = tmp_path / "pred.csv"
 

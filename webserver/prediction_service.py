@@ -17,7 +17,7 @@ from typing import Any
 import pandas as pd
 
 from AGVarPred.predictor import AGVarPredPredictor
-from agvarpred_core.af_source import LocalGnomADSource
+from agvarpred_core.af_source import resolve_af_source
 from agvarpred_core.feature_generator import FeatureGenerator
 from agvarpred_core.utils import make_variant_id
 
@@ -109,13 +109,17 @@ def live_provider_status(
     if not api_key:
         return False, "AlphaGenome API key is not configured."
 
-    gnomad_path = os.getenv("GNOMAD_VCF")
-    if not gnomad_path or not Path(gnomad_path).is_file():
-        return False, "An indexed GRCh38 gnomAD VCF is not configured."
-
-    index_candidates = (Path(f"{gnomad_path}.tbi"), Path(f"{gnomad_path}.csi"))
-    if not any(path.is_file() for path in index_candidates):
-        return False, "The configured gnomAD VCF index is missing."
+    gnomad_tsv = os.getenv("GNOMAD_TSV")
+    gnomad_vcf = os.getenv("GNOMAD_VCF")
+    if gnomad_tsv and Path(gnomad_tsv).is_file():
+        if not Path(f"{gnomad_tsv}.tbi").is_file():
+            return False, "The configured GNOMAD_TSV index is missing."
+    elif gnomad_vcf and Path(gnomad_vcf).is_file():
+        index_candidates = (Path(f"{gnomad_vcf}.tbi"), Path(f"{gnomad_vcf}.csi"))
+        if not any(path.is_file() for path in index_candidates):
+            return False, "The configured GNOMAD_VCF index is missing."
+    else:
+        return False, "Neither GNOMAD_TSV nor GNOMAD_VCF is configured."
 
     try:
         sdk_available = importlib.util.find_spec("alphagenome") is not None
@@ -151,13 +155,12 @@ class LivePredictionService:
             raise RuntimeError(message)
 
         api_key = os.environ["ALPHAGENOME_API_KEY"]
-        gnomad_path = os.environ["GNOMAD_VCF"]
 
-        # The local VCF uses the same gnomAD exomes GRCh38 release expected by
-        # the primary model and contains both AF and the VEP CSQ annotation.
-        af_source = LocalGnomADSource(gnomad_path)
+        # Prefer the reduced tabix-indexed TSV (GNOMAD_TSV) if available, but
+        # fall back to the full local VCF (GNOMAD_VCF) for backward compatibility.
+        af_source = resolve_af_source()
         if not af_source.is_available():
-            raise RuntimeError("The configured gnomAD annotation source is unavailable.")
+            raise RuntimeError("Neither GNOMAD_TSV nor GNOMAD_VCF is configured.")
 
         self.predictor = predictor
         if predictor.model_type != "full" or predictor.n_features != 120:

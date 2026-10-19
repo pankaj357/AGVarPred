@@ -49,7 +49,9 @@ def test_predictor_empty_input(synthetic_model_dir):
     assert preds.empty
 
 
-def test_auto_predictor_selects_no_af_without_gnomad(synthetic_model_dir):
+def test_auto_predictor_selects_no_af_without_gnomad(synthetic_model_dir, monkeypatch):
+    """When no gnomAD source is available, auto-selection uses the no-AF model."""
+    monkeypatch.delenv("GNOMAD_VCF", raising=False)
     with np.errstate(invalid="ignore"):
         auto = AGVarPredAutoPredictor(
             model_dir=synthetic_model_dir,

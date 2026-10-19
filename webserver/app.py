@@ -9,11 +9,23 @@ from __future__ import annotations
 import logging
 import os
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
-from fastapi import FastAPI, HTTPException, status
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, Request, status
+
+# Load deployment variables from an untracked webserver/.env file.
+# Existing process-environment variables take precedence.
+# Skip auto-loading during pytest so tests stay isolated.
+if not os.getenv("PYTEST_VERSION"):
+    load_dotenv(Path(__file__).parent / ".env")
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from slowapi import Limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 from AGVarPred import AGVarPredPredictor
 from agvarpred_core.utils import make_variant_id
@@ -21,6 +33,23 @@ from webserver.prediction_service import env_enabled, get_live_service, live_pro
 
 APP_NAME = "AGVarPred Web Server"
 MAX_VARIANTS_PER_REQUEST = 25
+
+
+def _cors_origins() -> list[str]:
+    """Return allowed CORS origins from the deployment environment.
+
+    In development the Vite dev server runs on http://127.0.0.1:5173 or
+    http://localhost:5173. In production, set AGVARPRED_CORS_ORIGINS to the
+    exact origins that should be allowed. Never default to ``*``.
+    """
+    env_value = os.getenv("AGVARPRED_CORS_ORIGINS", "")
+    if env_value:
+        return [origin.strip() for origin in env_value.split(",") if origin.strip()]
+    return [
+        "http://127.0.0.1:5173",
+        "http://localhost:5173",
+    ]
+
 
 app = FastAPI(
     title=APP_NAME,
@@ -30,6 +59,27 @@ app = FastAPI(
         "Not for clinical decision-making. Live prediction remains disabled "
         "until the live feature provider is implemented and validated."
     ),
+)
+
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+
+
+def _rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded) -> JSONResponse:
+    return JSONResponse(
+        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+        content={"detail": "Rate limit exceeded. Please slow down."},
+    )
+
+
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_cors_origins(),
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
 )
 
 
@@ -121,7 +171,8 @@ def get_frozen_predictor() -> AGVarPredPredictor:
 
 
 @app.get("/api/health", response_model=HealthResponse, tags=["service"])
-def health() -> HealthResponse:
+@limiter.limit("10/minute")
+def health(request: Request) -> HealthResponse:
     """Return service and frozen-model metadata without exposing secrets."""
     predictor = get_frozen_predictor()
     provider_ready, _ = live_provider_status(
@@ -146,7 +197,8 @@ def health() -> HealthResponse:
 
 
 @app.post("/api/predict", tags=["prediction"])
-def predict(request: PredictRequest) -> dict:
+@limiter.limit("5/minute")
+def predict(request: Request, payload: PredictRequest) -> dict:
     """Generate live features and score variants with the frozen 120-feature model."""
     predictor = get_frozen_predictor()
 
@@ -176,7 +228,7 @@ def predict(request: PredictRequest) -> dict:
 
     try:
         service = get_live_service(predictor)
-        return service.predict(request.variants)
+        return service.predict(payload.variants)
     except HTTPException:
         raise
     except RuntimeError as exc:
