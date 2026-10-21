@@ -72,7 +72,7 @@ def process_file(input_csv, output_dir):
 
 
 # =========================
-# RUN FOR ALL SPLITS (USING NEW GENE-BASED SPLITS)
+# RUN FOR ALL SPLITS (USING GENE-BASED SPLITS)
 # =========================
 print("\n" + "="*60)
 print("CREATING ALPHAGENOME INPUT FILES FROM PROPER GENE SPLITS")
