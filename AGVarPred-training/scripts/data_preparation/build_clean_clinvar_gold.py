@@ -17,13 +17,13 @@ df = df[df["Assembly"] == "GRCh38"]
 print("After GRCh38 filter:", len(df))
 
 # =========================
-# STEP 2: Keep germline only ← NEW
+# STEP 2: Keep germline only 
 # =========================
 df = df[df["OriginSimple"] == "germline"]
 print("After germline filter:", len(df))
 
 # =========================
-# STEP 3: Keep high review status ← NEW
+# STEP 3: Keep high review status 
 # =========================
 high_quality_review = [
     "criteria provided, multiple submitters, no conflicts",
@@ -40,7 +40,7 @@ df = df[df["ClinicalSignificance"].isin(["Pathogenic", "Benign"])]
 print("After strict label filter:", len(df))
 
 # =========================
-# STEP 5: Remove conflicting entries ← NEW
+# STEP 5: Remove conflicting entries 
 # =========================
 df = df[~df["ClinicalSignificance"].str.contains("conflicting", case=False, na=False)]
 print("After conflict filter:", len(df))
