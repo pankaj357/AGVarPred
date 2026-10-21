@@ -172,29 +172,8 @@ GitHub repository.
 - **Version DOI for v1.0.9**:  
   <https://doi.org/10.5281/zenodo.21997464>
 
-```text
-Kumar, P., & Kanaka, K. K. (2026). AGVarPred: germline variant pathogenicity
-prediction using AlphaGenome functional genomics (Version 1.0.9).
-Zenodo. https://doi.org/10.5281/zenodo.20955782
-GitHub: https://github.com/pankaj357/AGVarPred
-```
-
 See [`CITATION.cff`](CITATION.cff) for machine-readable citation metadata.
 
-## References
-
-- Landrum, M. J., et al. (2018). ClinVar: improving access to variant
-  interpretations and supporting evidence. *Nucleic Acids Research*, 46(D1),
-  D1062–D1067. https://doi.org/10.1093/nar/gkx1153
-- Karczewski, K. J., et al. (2020). The mutational constraint spectrum quantified
-  from variation in 141,456 humans. *Nature*, 581, 434–443.
-  https://doi.org/10.1038/s41586-020-2308-7
-- McLaren, W., et al. (2016). The Ensembl Variant Effect Predictor. *Genome
-  Biology*, 17, 122. https://doi.org/10.1186/s13059-016-0974-4
-- Ke, G., et al. (2017). LightGBM: A highly efficient gradient boosting decision
-  tree. *NeurIPS*. https://papers.nips.cc/paper/6907-lightgbm
-- AlphaGenome functional genomics platform (see [`docs/installation.md`](docs/installation.md)
-  for access instructions).
 
 ## License
 
